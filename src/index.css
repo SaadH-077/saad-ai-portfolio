@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar from the original code */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #050508;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a855f7;
+}
+
+/* Animation for scan effect */
+@keyframes scan {
+  0% { top: -100%; }
+  100% { top: 100%; }
+}
+.animate-scan {
+  animation: scan 3s linear infinite;
+}
+
+/* Perspective for 3D cards */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.group-inner {
+  transform-style: preserve-3d;
+}
