@@ -32,7 +32,7 @@ const HeroAgenticBrain = () => {
 
     // --- OBJECTS ---
 
-    const particleCount = 2500; // Increased particle count
+    const particleCount = 1500; // Increased particle count
     const particleGeo = new THREE.BufferGeometry();
     const particlePos = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -98,7 +98,7 @@ const HeroAgenticBrain = () => {
     scene.add(coreParticles);
 
     // --- GALAXY BACKGROUND ---
-    const galaxyCount = 21000;
+    const galaxyCount = 25000;
     const galaxyGeo = new THREE.BufferGeometry();
     const galaxyPos = new Float32Array(galaxyCount * 3);
     const galaxyColors = new Float32Array(galaxyCount * 3);
@@ -158,7 +158,7 @@ const HeroAgenticBrain = () => {
     const lineMat = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.3, // Increased connection visibility
+      opacity: 0.2, // Increased connection visibility
       blending: THREE.AdditiveBlending
     });
     const lineGeo = new THREE.BufferGeometry();
