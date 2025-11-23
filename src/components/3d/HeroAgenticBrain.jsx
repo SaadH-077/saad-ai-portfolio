@@ -31,7 +31,7 @@ const HeroAgenticBrain = () => {
 
     // --- OBJECTS ---
 
-    const particleCount = 1800; 
+    const particleCount = 1800; // Increased particle count
     const particleGeo = new THREE.BufferGeometry();
     const particlePos = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -44,7 +44,7 @@ const HeroAgenticBrain = () => {
     const c3 = new THREE.Color(0xff0055); // Hot Pink (Bottom)
 
     for(let i=0; i<particleCount; i++) {
-      const r = 6.5 + Math.random() * 2; 
+      const r = 6.5 + Math.random() * 2.5; // Slightly larger radius variation
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       
@@ -78,16 +78,16 @@ const HeroAgenticBrain = () => {
       particleExplodeDir[i*3+2] = z;
       
       particleVel.push({
-        x: (Math.random() - 0.5) * 0.01,
-        y: (Math.random() - 0.5) * 0.01,
-        z: (Math.random() - 0.5) * 0.01
+        x: (Math.random() - 0.5) * 0.02, // Faster movement
+        y: (Math.random() - 0.5) * 0.02,
+        z: (Math.random() - 0.5) * 0.02
       });
     }
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
     
     const particleMat = new THREE.PointsMaterial({
-      size: 0.15,
+      size: 0.12, // Slightly smaller for denser look
       vertexColors: true,
       transparent: true,
       opacity: 0.9,
@@ -96,10 +96,68 @@ const HeroAgenticBrain = () => {
     const coreParticles = new THREE.Points(particleGeo, particleMat);
     scene.add(coreParticles);
 
+    // --- GALAXY BACKGROUND ---
+    const galaxyCount = 21000;
+    const galaxyGeo = new THREE.BufferGeometry();
+    const galaxyPos = new Float32Array(galaxyCount * 3);
+    const galaxyColors = new Float32Array(galaxyCount * 3);
+    
+    for(let i=0; i<galaxyCount; i++) {
+      const i3 = i * 3;
+      // Create a spiral galaxy effect
+      const radius = 7 + Math.random() * 100; // Distance from center
+      const spinAngle = radius * 0.8; // Spiral twist
+      const branchAngle = (i % 3) * ((Math.PI * 2) / 3); // 3 arms
+      
+      const randomX = (Math.random() - 0.5) * 2;
+      const randomY = (Math.random() - 0.5) * 4; // Vertical spread
+      const randomZ = (Math.random() - 0.5) * 2;
+
+      const x = Math.cos(branchAngle + spinAngle) * radius + randomX;
+      const y = randomY * (1 - radius/25); // Taper at edges
+      const z = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+      galaxyPos[i3] = x;
+      galaxyPos[i3+1] = y;
+      galaxyPos[i3+2] = z;
+
+      // Colors: Deep Purple, Blue, and White stars
+      const color = new THREE.Color();
+      const rand = Math.random();
+      if(rand > 0.7) {
+        color.setHex(0xffffff); // Stars
+      } else if (rand > 0.4) {
+        color.setHex(0x9d00ff); // Purple
+      } else {
+        color.setHex(0x00f3ff); // Cyan
+      }
+      
+      galaxyColors[i3] = color.r;
+      galaxyColors[i3+1] = color.g;
+      galaxyColors[i3+2] = color.b;
+    }
+
+    galaxyGeo.setAttribute('position', new THREE.BufferAttribute(galaxyPos, 3));
+    galaxyGeo.setAttribute('color', new THREE.BufferAttribute(galaxyColors, 3));
+
+    const galaxyMat = new THREE.PointsMaterial({
+      size: 0.05,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const galaxy = new THREE.Points(galaxyGeo, galaxyMat);
+    galaxy.rotation.x = Math.PI / 3; // Tilt the galaxy 60 degrees
+    galaxy.rotation.z = Math.PI / 9; // Slight tilt on Z axis
+    scene.add(galaxy);
+
     const lineMat = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.15, 
+      opacity: 0.1, 
       blending: THREE.AdditiveBlending
     });
     const lineGeo = new THREE.BufferGeometry();
@@ -191,6 +249,9 @@ const HeroAgenticBrain = () => {
       scene.rotation.y += (targetRotY - scene.rotation.y) * 0.05;
 
       coreParticles.rotation.y += 0.002;
+      
+      // Rotate Galaxy (around its own local Y axis which is now tilted)
+      galaxy.rotateY(0.001);
 
       renderer.render(scene, camera);
     };

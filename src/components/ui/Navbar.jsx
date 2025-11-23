@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 import { Terminal, Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   const navLinks = ['About', 'Experience', 'Skills', 'Projects', 'Awards', 'Contact'];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#030305]/80 backdrop-blur-lg border-b border-white/5">
+      {/* Scroll Progress Bar */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-purple-500 via-cyan-500 to-purple-500 origin-left"
+        style={{ scaleX }}
+      />
+
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-lg animate-pulse">

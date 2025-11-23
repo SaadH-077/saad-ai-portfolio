@@ -12,7 +12,12 @@ import {
   Award, 
   Github, 
   Mail, 
-  Linkedin 
+  Linkedin,
+  Database,
+  Brain,
+  ChevronDown,
+  ChevronUp,
+  Gamepad2
 } from 'lucide-react';
 
 // Components
@@ -25,11 +30,16 @@ import InteractiveTimeline from './components/ui/InteractiveTimeline';
 import Navbar from './components/ui/Navbar';
 import HoverCard from './components/ui/HoverCard';
 import TypewriterText from './components/ui/TypewriterText';
+import CustomCursor from './components/ui/CustomCursor';
+import TechDivider from './components/ui/TechDivider';
+import Preloader from './components/ui/Preloader';
+import ScrollToTop from './components/ui/ScrollToTop';
 import { Section, SectionHeading } from './components/ui/Section';
-// import ChatWidget from './components/ui/ChatWidget';
+import ChatWidget from './components/ui/ChatWidget';
+import SnakeGame from './components/game/SnakeGame';
 
 // Assets
-import profileImage from './assets/profile.jpg';
+import profileImage from './assets/profile2.jpg';
 import cvFile from './assets/Muhammad Saad Haroon - EuroPassCV 12_10_2025.pdf';
 
 // Data
@@ -49,9 +59,52 @@ const getColorHex = (color) => {
   return colors[color] || colors.purple;
 };
 
+const ExperienceCard = ({ exp }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <HoverCard onClick={() => setIsExpanded(!isExpanded)} className="cursor-pointer">
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-lg font-bold text-white">{exp.title}</h3>
+          <p className="text-sm text-slate-500 mb-2 font-mono">{exp.company}</p>
+        </div>
+        <div className={`text-${exp.color}-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+          <ChevronDown size={20} />
+        </div>
+      </div>
+      
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <ul className="text-slate-400 text-sm space-y-2 list-disc list-inside mt-4 pt-4 border-t border-white/10">
+              {exp.points.map((point, i) => (
+                <li key={i} dangerouslySetInnerHTML={{ __html: point.replace(/"([^"]+)"/g, '<strong>"$1"</strong>') }} />
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {!isExpanded && (
+        <p className="text-xs text-slate-600 mt-2 italic">Click to view details...</p>
+      )}
+    </HoverCard>
+  );
+};
+
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
-  // const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isGameOpen, setIsGameOpen] = useState(false);
+  
   const categories = ['All', 'ML/DL', 'GenAI / NLP', 'Computer Vision', 'Software Engineering'];
 
   const filteredProjects = activeCategory === 'All' 
@@ -59,88 +112,127 @@ const App = () => {
     : projects.filter(p => p.category === activeCategory);
 
   return (
-    <div className="bg-gradient-to-b from-[#050508] via-[#0b0b15] to-[#050508] text-slate-200 min-h-screen font-sans selection:bg-purple-500/30 selection:text-white overflow-x-hidden">
-      <NeuralBackground />
-      <Navbar />
+    <div className="bg-gradient-to-b from-[#050508] via-[#0b0b15] to-[#050508] text-slate-200 min-h-screen font-sans selection:bg-purple-500/30 selection:text-white overflow-x-hidden cursor-none">
+      <CustomCursor />
+      
+      <AnimatePresence mode="wait">
+        {isLoading && <Preloader setIsLoading={setIsLoading} />}
+      </AnimatePresence>
 
-      <main>
+      <SnakeGame isOpen={isGameOpen} onClose={() => setIsGameOpen(false)} />
+
+      {!isLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <NeuralBackground />
+          <Navbar />
+          <ScrollToTop />
+
+          <main>
         {/* HERO SECTION */}
-        <section id="home" className="min-h-screen relative z-10 flex flex-col pt-24 lg:pt-0 overflow-hidden bg-gradient-to-b from-transparent via-purple-900/5 to-transparent">
-          <div className="flex-grow grid grid-cols-1 lg:grid-cols-2 max-w-7xl mx-auto w-full h-full relative items-center">
+        <section id="home" className="min-h-screen relative z-10 flex flex-col pt-24 lg:pt-0 overflow-hidden bg-[#050508]">
+          
+          {/* HUD / Decorative Background Elements */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Top Left Grid */}
+            <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(rgba(168,85,247,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(168,85,247,0.03)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_70%)]" />
             
-            {/* Left: Text Content */}
-            <motion.div 
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex flex-col justify-center px-6 z-20"
-            >
-              <div className="flex items-center gap-4 mb-8 opacity-70">
-                <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-purple-500" />
-                <div className="text-[10px] font-mono text-purple-400 tracking-[0.2em] uppercase">
-                  System: Online
-                </div>
-                <div className="h-[1px] flex-grow bg-gradient-to-r from-purple-500 to-transparent max-w-[100px]" />
-              </div>
+            {/* Floating Orbs */}
+            <div className="absolute top-20 left-[10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-20 right-[10%] w-96 h-96 bg-cyan-600/10 rounded-full blur-[120px] animate-pulse delay-1000" />
 
-              <div className="inline-flex items-center gap-3 px-4 py-2 rounded border border-purple-500/30 bg-purple-900/20 text-purple-300 text-xs font-mono mb-8 w-fit backdrop-blur-sm shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-                <Activity size={12} className="animate-pulse text-purple-400" />
-                <span>OPEN FOR COLLABORATION</span>
-              </div>
+            {/* Sci-Fi Rings (Left) */}
+            <div className="absolute top-32 left-10 opacity-20 hidden lg:block">
+              <div className="w-64 h-64 border border-purple-500/30 rounded-full animate-[spin_10s_linear_infinite] border-t-transparent border-l-transparent" />
+              <div className="w-48 h-48 border border-cyan-500/20 rounded-full absolute top-8 left-8 animate-[spin_15s_linear_infinite_reverse] border-b-transparent border-r-transparent" />
+            </div>
+          </div>
 
-              <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] mb-8 drop-shadow-2xl">
-                SAAD<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400">.AI</span> <br />
-                <span className="text-2xl md:text-4xl font-light text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-600 tracking-normal block mt-2">
-                  PERSONAL PORTFOLIO WEBSITE
-                </span>
-              </h1>
-              
-              <div className="flex items-center gap-4 text-xl md:text-2xl font-light text-slate-300 mb-8 h-12 font-mono">
-                <span className="text-white-500 font-bold animate-pulse">{'>>>>>'}</span>
-                <TypewriterText texts={["Agentic AI Developer", "Machine Learning Engineer", "Software Engineer"]} />
-                <span className="text-white-500 font-bold animate-pulse">{'<<<<<'}</span>
-              </div>
-
-              <div className="relative max-w-lg mb-10 group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                <div className="relative border-l-4 border-purple-500 pl-6 bg-[#0a0a0c]/80 backdrop-blur-sm py-6 pr-6 rounded-r-xl border-y border-r border-white/5">
-                  <p className="text-lg text-slate-300 leading-relaxed">
-                    Hello, I am <strong className="text-white font-semibold">Muhammad Saad Haroon</strong>. 
-                    I architect <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Intelligent Agentic Systems</span>. 
-                    My work bridges the gap between cutting-edge AI research and enterprise-grade production, creating autonomous agents that don't just predict—they reason, plan, and execute.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-4 pointer-events-auto">
-                <a href="#projects" className="px-8 py-4 bg-gradient-to-r from-cyan-600 to-purple-600 text-white font-bold rounded hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all flex items-center gap-2">
-                  Explore Projects <ExternalLink size={18} />
-                </a>
-                {/* <button onClick={() => setIsChatOpen(true)} className="px-8 py-4 border border-slate-700 text-white font-medium rounded hover:border-purple-500/50 hover:bg-purple-500/10 transition-all flex items-center gap-2 backdrop-blur-md cursor-pointer">
-                   Chat with Me <Mail size={18} />
-                </button> */}
-              </div>
-            </motion.div>
-
-            {/* Right: 3D Interactive */}
-            <div className="relative h-[450px] lg:h-auto lg:static lg:flex lg:items-center lg:justify-center z-10 pointer-events-auto">
-              <div className="w-full h-full lg:h-[800px] relative flex items-center justify-center">
-                <div className="w-full h-full md:h-[700px]">
+          <div className="flex-grow relative w-full h-full flex flex-col justify-end pb-12 lg:pb-20">
+            
+            {/* 3D Background Layer (Absolute & Centered) */}
+            <div className="absolute inset-0 flex items-center justify-center z-0">
+              <div className="w-full h-full relative flex items-center justify-center">
+                
+                {/* 3D Container */}
+                <div className="relative w-full h-full z-10">
                    <HeroAgenticBrain />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent lg:hidden pointer-events-none" />
-                
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 2 }}
-                  className="absolute bottom-10 right-10 text-xs font-mono text-purple-500/70 flex items-center gap-2 bg-black/50 px-3 py-1 rounded border border-purple-900/50 backdrop-blur-sm"
-                >
-                  <MousePointer2 size={14} />
-                  CLICK CORE TO SCATTER
-                </motion.div>
+
+                {/* Background Glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] -z-10" />
               </div>
             </div>
+
+            {/* HUD Elements (Corners) */}
+            <div className="absolute top-24 left-6 lg:left-12 flex flex-col gap-2 z-20 pointer-events-none mix-blend-difference">
+               <div className="flex items-center gap-2">
+                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                 <span className="text-[10px] font-mono text-slate-400 tracking-widest">SYSTEM: ONLINE</span>
+               </div>
+               <span className="text-[10px] font-mono text-slate-600 tracking-widest">V.2.0.25</span>
+            </div>
+
+            <div className="absolute top-24 right-6 lg:right-12 flex flex-col items-end gap-2 z-20 pointer-events-none mix-blend-difference">
+               <span className="text-[10px] font-mono text-slate-400 tracking-widest">[ LOC: 31.5°N, 74.3°E ]</span>
+               <span className="text-[10px] font-mono text-slate-600 tracking-widest">LAHORE, PK</span>
+            </div>
+
+            <div className="absolute bottom-12 left-6 lg:left-12 hidden lg:flex flex-col gap-6 z-20 pointer-events-auto">
+               <a href="https://github.com/SaadH-077" target="_blank" rel="noreferrer" className="text-slate-500 hover:text-white transition-colors"><Github size={20} /></a>
+               <a href="https://www.linkedin.com/in/muhammad-saad-haroon-5b38a1241/" target="_blank" rel="noreferrer" className="text-slate-500 hover:text-blue-400 transition-colors"><Linkedin size={20} /></a>
+               <a href="mailto:saadharoonjehangir@gmail.com" className="text-slate-500 hover:text-purple-400 transition-colors"><Mail size={20} /></a>
+               <div className="w-[1px] h-12 bg-slate-800 mx-auto" />
+            </div>
+
+            <div className="absolute bottom-12 right-6 lg:right-12 hidden lg:flex flex-col items-center gap-4 z-20 pointer-events-none">
+               <span className="text-[10px] font-mono text-slate-500 tracking-widest rotate-90 origin-right translate-x-2">SCROLL</span>
+               <div className="w-[1px] h-12 bg-gradient-to-b from-slate-800 to-slate-500" />
+            </div>
+
+            {/* Gradient Overlay for Text Readability */}
+            <div className="absolute bottom-0 left-0 w-full h-[50%] bg-gradient-to-t from-[#050508] via-[#050508]/90 to-transparent z-0 pointer-events-none" />
+
+            {/* Main Text Content (Centered & Minimal) */}
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto pointer-events-none mb-12"
+            >
+              <div className="pointer-events-auto w-full flex flex-col items-center">
+                
+                <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter leading-[0.8] mb-6 drop-shadow-2xl relative mix-blend-overlay opacity-90">
+                  SAAD<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-cyan-500 to-purple-500 animate-gradient-x">.AI</span>
+                </h1>
+                
+                <div className="flex items-center justify-center gap-4 text-lg md:text-xl font-light text-slate-300 mb-10 h-8 font-mono tracking-wide">
+                  <span className="text-purple-500 font-bold">{'>'}</span>
+                  <TypewriterText texts={["Agentic AI Architect", "Machine Learning Engineer", "Full Stack Developer"]} />
+                  <span className="w-1.5 h-5 bg-purple-500 animate-blink ml-1" />
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-6">
+                  <a href="#projects" className="group relative px-8 py-3 rounded-full backdrop-blur-md transition-all flex items-center gap-2 overflow-hidden bg-gradient-to-r from-purple-600 to-cyan-600 hover:scale-105 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]">
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <span className="text-sm font-bold font-mono text-white relative z-10 tracking-wide">EXPLORE WORK</span>
+                  </a>
+                  
+                  <button 
+                    onClick={() => setIsGameOpen(true)}
+                    className="group relative px-8 py-3 bg-transparent border border-white/10 rounded-full backdrop-blur-md transition-all flex items-center gap-2 overflow-hidden hover:border-cyan-500/50"
+                  >
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Gamepad2 size={18} className="text-slate-300 group-hover:text-cyan-400 transition-colors" />
+                    <span className="text-sm font-mono text-slate-300 group-hover:text-white transition-colors">SIMULATION</span>
+                  </button>
+                </div>
+
+              </div>
+            </motion.div>
 
           </div>
           
@@ -150,10 +242,12 @@ const App = () => {
             transition={{ delay: 2, duration: 1 }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 z-20"
           >
-            <span className="text-[10px] font-mono tracking-widest uppercase">Scroll to Scan</span>
-            <div className="w-[1px] h-12 bg-gradient-to-b from-purple-500 to-transparent" />
+            {/* <span className="text-[10px] font-mono tracking-widest uppercase animate-pulse">Scroll to Scan</span> */}
+            {/* <div className="w-[1px] h-12 bg-gradient-to-b from-purple-500 to-transparent" /> */}
           </motion.div>
         </section>
+
+        <TechDivider />
 
         {/* ABOUT SECTION */}
         <Section id="about" className="relative">
@@ -234,6 +328,8 @@ const App = () => {
           </div>
         </Section>
 
+        <TechDivider />
+
         {/* EXPERIENCE SECTION */}
         <Section id="experience">
           <SectionHeading title="Professional Log" subtitle="TIMELINE" />
@@ -266,15 +362,7 @@ const App = () => {
                   </div>
 
                   <div className={`md:w-[45%] ${index % 2 !== 0 ? 'md:pr-12 text-left' : 'md:pl-12 text-left'}`}>
-                    <HoverCard>
-                      <h3 className="text-lg font-bold text-white">{exp.title}</h3>
-                      <p className="text-sm text-slate-500 mb-4 font-mono">{exp.company}</p>
-                      <ul className="text-slate-400 text-sm space-y-2 list-disc list-inside">
-                        {exp.points.map((point, i) => (
-                          <li key={i} dangerouslySetInnerHTML={{ __html: point.replace(/"([^"]+)"/g, '<strong>"$1"</strong>') }} />
-                        ))}
-                      </ul>
-                    </HoverCard>
+                    <ExperienceCard exp={exp} />
                   </div>
                 </div>
               )
@@ -282,6 +370,79 @@ const App = () => {
 
           </div>
         </Section>
+
+        <TechDivider />
+
+        {/* PROJECTS SECTION */}
+        <Section id="projects" className="relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-b from-purple-900/5 to-cyan-900/5 pointer-events-none" />
+          <SectionHeading title="System Blueprints" subtitle="PROJECTS" />
+          
+          <div className="flex flex-wrap justify-center gap-4 mb-12 relative z-10">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 rounded-full text-xs font-mono transition-all border ${
+                  activeCategory === cat 
+                    ? "bg-purple-500/10 border-purple-500 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]" 
+                    : "bg-white/5 border-white/5 text-slate-400 hover:border-white/20"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
+            <AnimatePresence mode='popLayout'>
+              {filteredProjects.map((project, idx) => (
+                <motion.div
+                  key={project.title}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <HoverCard className="flex flex-col h-full">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${project.color}-500/10 text-${project.color}-400`}>
+                        <project.icon size={20} />
+                      </div>
+                      <span className="text-[10px] font-mono border border-white/10 px-2 py-1 rounded text-slate-500 uppercase">
+                        {project.category}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
+                    <p className="text-slate-400 text-sm mb-6 flex-grow leading-relaxed">
+                      {project.desc}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.tags.map(tag => (
+                        <span key={tag} className="text-[10px] text-slate-500 bg-white/5 px-2 py-1 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <a 
+                      href={project.link} 
+                      target="_blank"
+                      className="mt-auto w-full py-2 border border-slate-700 rounded flex items-center justify-center gap-2 text-sm text-white hover:bg-white hover:text-black transition-all font-bold group/btn"
+                    >
+                      <Github size={16} className="group-hover/btn:text-black transition-colors" /> View Code
+                    </a>
+                  </HoverCard>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </Section>
+
+        <TechDivider />
 
         {/* NEW: SKILLS & CERTIFICATIONS SECTION */}
         <Section id="skills" className="relative">
@@ -355,6 +516,8 @@ const App = () => {
           </div>
         </Section>
 
+        <TechDivider />
+
         {/* NEW: HONORS & AWARDS SECTION */}
         <Section id="awards" className="relative">
           <SectionHeading title="Honors & Recognitions" subtitle="ACHIEVEMENTS" />
@@ -372,74 +535,7 @@ const App = () => {
           </div>
         </Section>
 
-        {/* PROJECTS SECTION */}
-        <Section id="projects" className="relative">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-b from-purple-900/5 to-cyan-900/5 pointer-events-none" />
-          <SectionHeading title="System Blueprints" subtitle="PROJECTS" />
-          
-          <div className="flex flex-wrap justify-center gap-4 mb-12 relative z-10">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-mono transition-all border ${
-                  activeCategory === cat 
-                    ? "bg-purple-500/10 border-purple-500 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]" 
-                    : "bg-white/5 border-white/5 text-slate-400 hover:border-white/20"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-            <AnimatePresence mode='popLayout'>
-              {filteredProjects.map((project, idx) => (
-                <motion.div
-                  key={project.title}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <HoverCard className="flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${project.color}-500/10 text-${project.color}-400`}>
-                        <project.icon size={20} />
-                      </div>
-                      <span className="text-[10px] font-mono border border-white/10 px-2 py-1 rounded text-slate-500 uppercase">
-                        {project.category}
-                      </span>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-                    <p className="text-slate-400 text-sm mb-6 flex-grow leading-relaxed">
-                      {project.desc}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.map(tag => (
-                        <span key={tag} className="text-[10px] text-slate-500 bg-white/5 px-2 py-1 rounded">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <a 
-                      href={project.link} 
-                      target="_blank"
-                      className="mt-auto w-full py-2 border border-slate-700 rounded flex items-center justify-center gap-2 text-sm text-white hover:bg-white hover:text-black transition-all font-bold group/btn"
-                    >
-                      <Github size={16} className="group-hover/btn:text-black transition-colors" /> View Code
-                    </a>
-                  </HoverCard>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        </Section>
+        <TechDivider />
 
         {/* CONTACT SECTION */}
         <Section id="contact">
@@ -489,7 +585,9 @@ const App = () => {
         </Section>
       </main>
 
-      {/* <ChatWidget isOpen={isChatOpen} setIsOpen={setIsChatOpen} /> */}
+          <ChatWidget isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+        </motion.div>
+      )}
     </div>
   );
 };
