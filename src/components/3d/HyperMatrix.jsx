@@ -10,6 +10,7 @@ const HyperMatrix = () => {
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 12;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -30,7 +31,7 @@ const HyperMatrix = () => {
     // Create a matrix of floating cubes
     const cubeCount = 100;
     const instancedGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-    const instancedMat = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.7 });
+    const instancedMat = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.9 });
     const mesh = new THREE.InstancedMesh(instancedGeo, instancedMat, cubeCount);
     
     const dummy = new THREE.Object3D();
@@ -93,7 +94,7 @@ const HyperMatrix = () => {
     };
   }, []);
 
-  return <div ref={mountRef} className="w-full h-full opacity-90" />;
+  return <div ref={mountRef} className="w-full h-full opacity-100" />;
 };
 
 export default HyperMatrix;

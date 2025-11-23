@@ -50,14 +50,15 @@ const ArchitectureView = ({ project, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+        className="fixed inset-0 z-[100] flex items-end md:items-center justify-center md:p-4 bg-black/80 backdrop-blur-md"
         onClick={onClose}
       >
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          className="relative w-full max-w-5xl bg-[#0a0a0a] border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] md:max-h-[90vh] mx-4"
+          initial={{ y: "100%", opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: "100%", opacity: 0 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="relative w-full max-w-5xl bg-[#0a0a0a] border-t md:border border-slate-800 rounded-t-2xl md:rounded-xl overflow-hidden shadow-2xl flex flex-col h-[90vh] md:h-auto md:max-h-[90vh]"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
@@ -109,7 +110,7 @@ const ArchitectureView = ({ project, onClose }) => {
           <div className="relative flex-grow overflow-hidden bg-[#050505]">
             
             {activeTab === 'blueprint' ? (
-              <div className="w-full h-full p-4 md:p-8 overflow-y-auto">
+              <div className="w-full h-full p-4 md:p-8 overflow-y-auto overscroll-contain pb-24 md:pb-8">
                 {/* Grid Background */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none" 
                      style={{ 

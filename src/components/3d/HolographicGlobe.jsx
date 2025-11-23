@@ -10,6 +10,7 @@ const HolographicGlobe = () => {
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 15;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -29,13 +30,13 @@ const HolographicGlobe = () => {
       color: 0x4488ff, 
       wireframe: true, 
       transparent: true, 
-      opacity: 0.15 
+      opacity: 0.3 
     });
     const globe = new THREE.Mesh(geometry, material);
     scene.add(globe);
 
     const pGeo = new THREE.IcosahedronGeometry(5, 3);
-    const pMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.05, transparent: true, opacity: 0.4 });
+    const pMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.08, transparent: true, opacity: 0.8 });
     const points = new THREE.Points(pGeo, pMat); 
     scene.add(points);
 

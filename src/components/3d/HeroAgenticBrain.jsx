@@ -15,6 +15,7 @@ const HeroAgenticBrain = () => {
     camera.position.z = 22; 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -31,7 +32,7 @@ const HeroAgenticBrain = () => {
 
     // --- OBJECTS ---
 
-    const particleCount = 1800; // Increased particle count
+    const particleCount = 2500; // Increased particle count
     const particleGeo = new THREE.BufferGeometry();
     const particlePos = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -87,10 +88,10 @@ const HeroAgenticBrain = () => {
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
     
     const particleMat = new THREE.PointsMaterial({
-      size: 0.12, // Slightly smaller for denser look
+      size: 0.15, // Increased for better visibility
       vertexColors: true,
       transparent: true,
-      opacity: 0.9,
+      opacity: 1.0, // Max opacity for better contrast
       blending: THREE.AdditiveBlending
     });
     const coreParticles = new THREE.Points(particleGeo, particleMat);
@@ -141,10 +142,10 @@ const HeroAgenticBrain = () => {
     galaxyGeo.setAttribute('color', new THREE.BufferAttribute(galaxyColors, 3));
 
     const galaxyMat = new THREE.PointsMaterial({
-      size: 0.05,
+      size: 0.06,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.5, // Reduced background noise for contrast
       blending: THREE.AdditiveBlending,
       depthWrite: false
     });
@@ -157,7 +158,7 @@ const HeroAgenticBrain = () => {
     const lineMat = new THREE.LineBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity: 0.1, 
+      opacity: 0.3, // Increased connection visibility
       blending: THREE.AdditiveBlending
     });
     const lineGeo = new THREE.BufferGeometry();
@@ -248,10 +249,10 @@ const HeroAgenticBrain = () => {
       scene.rotation.x += (targetRotX - scene.rotation.x) * 0.05;
       scene.rotation.y += (targetRotY - scene.rotation.y) * 0.05;
 
-      coreParticles.rotation.y += 0.002;
+      coreParticles.rotation.y += 0.006;
       
       // Rotate Galaxy (around its own local Y axis which is now tilted)
-      galaxy.rotateY(0.001);
+      galaxy.rotateY(0.003);
 
       renderer.render(scene, camera);
     };

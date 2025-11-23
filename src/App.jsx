@@ -253,7 +253,7 @@ const App = () => {
             >
               <div className="pointer-events-auto w-full flex flex-col items-center">
                 
-                <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter leading-[0.8] mb-6 drop-shadow-2xl relative mix-blend-overlay opacity-90">
+                <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter leading-[0.8] mb-6 relative z-20" style={{ filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.9)) drop-shadow(0 0 40px rgba(0,0,0,0.6))' }}>
                   SAAD<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-cyan-500 to-purple-500 animate-gradient-x">.AI</span>
                 </h1>
                 

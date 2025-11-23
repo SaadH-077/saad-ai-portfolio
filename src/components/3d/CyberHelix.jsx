@@ -11,6 +11,7 @@ const CyberHelix = () => {
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 20;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -77,7 +78,7 @@ const CyberHelix = () => {
     };
   }, []);
 
-  return <div ref={mountRef} className="w-full h-full opacity-60" />;
+  return <div ref={mountRef} className="w-full h-full opacity-100" />;
 };
 
 export default CyberHelix;
