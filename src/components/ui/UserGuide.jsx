@@ -10,18 +10,18 @@ const UserGuide = ({ isOpen, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative w-full max-w-3xl bg-[#0a0a0c] border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+            className="relative w-full max-w-3xl bg-[#0a0a0c] border border-white/10 rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden mx-4"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-900/20 to-cyan-900/20 flex justify-between items-center">
+            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-900/20 to-cyan-900/20 flex justify-between items-center shrink-0">
               <div>
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                   <HelpCircle className="text-cyan-400" /> SYSTEM MANUAL
@@ -34,7 +34,7 @@ const UserGuide = ({ isOpen, onClose }) => {
             </div>
 
             {/* Content */}
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
               <Feature 
                 icon={Terminal} 
                 title="Terminal Mode" 
@@ -66,7 +66,7 @@ const UserGuide = ({ isOpen, onClose }) => {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-white/10 bg-white/5 flex justify-between items-center">
+            <div className="p-6 border-t border-white/10 bg-white/5 flex justify-between items-center shrink-0">
               <p className="text-[10px] text-slate-500 font-mono">
                 * Features are optimized for desktop experience.
               </p>

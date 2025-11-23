@@ -388,7 +388,7 @@ const App = () => {
                   I am a Software Engineer specializing in <strong className="text-white">Agentic AI</strong> and <strong className="text-white">Machine Learning</strong>, dedicated to building autonomous systems that solve complex enterprise challenges.
                 </p>
                 <p>
-                  Graduating with <span className="text-cyan-400 font-medium">High Distinction</span> from <strong>LUMS</strong> and recognized on the <strong>Dean's Honour List</strong> for three consecutive years, I combine rigorous academic foundations with practical engineering expertise. My work spans from co-authoring research on Generative AI storytelling at <strong>CSaLT</strong> to leading Deep Learning instruction as a <strong>Head Teaching Assistant</strong>.
+                  Graduating with <span className="text-cyan-400 font-medium">Distinction</span> from <strong>LUMS</strong> and recognized on the <strong>Dean's Honour List</strong> for three consecutive years, I combine rigorous academic foundations with practical engineering expertise. My work spans from co-authoring research on Generative AI storytelling at <strong>CSaLT</strong> to leading Deep Learning Education as a <strong>Head Teaching Assistant</strong>.
                 </p>
                 <p>
                   Currently, at <strong>GoSaaS</strong>, I lead the development of <strong>Oracle-based AI Agents</strong> in my capacity as a Software Engineer. I hold multiple <strong>Oracle Certifications</strong> in Generative AI and Cloud Infrastructure, leveraging this expertise to architect scalable, production-ready solutions that automate critical financial and operational workflows.
