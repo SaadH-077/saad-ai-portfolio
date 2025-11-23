@@ -32,7 +32,44 @@ export const projects = [
     category: "ML/DL",
     icon: Eye,
     color: "red",
-    link: "https://github.com/SaadH-077/Road-Damage-Classification-Using-ResNet50-InceptionV3-and-VGG16-A-Deep-Learning-Approach"
+    link: "https://github.com/SaadH-077/Road-Damage-Classification-Using-ResNet50-InceptionV3-and-VGG16-A-Deep-Learning-Approach",
+    architecture: {
+      nodes: [
+        { id: 'input', label: 'Input Images', type: 'client', desc: 'Road surface dataset (26 classes)' },
+        { id: 'backbone1', label: 'ResNet50', type: 'ai', desc: 'Feature extraction backbone 1' },
+        { id: 'backbone2', label: 'InceptionV3', type: 'ai', desc: 'Feature extraction backbone 2' },
+        { id: 'fusion', label: 'Feature Fusion', type: 'service', desc: 'Concatenation of feature vectors' },
+        { id: 'output', label: 'Classifier', type: 'code', desc: 'Softmax layer for damage type prediction' }
+      ],
+      edges: []
+    },
+    codeSnippet: {
+      language: "python",
+      code: `class RoadDamageClassifier(nn.Module):
+    def __init__(self, num_classes=26):
+        super(RoadDamageClassifier, self).__init__()
+        # Load pretrained backbones
+        self.resnet = models.resnet50(pretrained=True)
+        self.inception = models.inception_v3(pretrained=True)
+        
+        # Freeze early layers
+        for param in self.resnet.parameters():
+            param.requires_grad = False
+            
+        # Fusion Layer
+        self.fusion = nn.Sequential(
+            nn.Linear(2048 + 2048, 1024),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            nn.Linear(1024, num_classes)
+        )
+
+    def forward(self, x):
+        f1 = self.resnet(x)
+        f2 = self.inception(x)
+        combined = torch.cat((f1, f2), dim=1)
+        return self.fusion(combined)`
+    }
   },
   {
     title: "Federated Learning Opt.",
@@ -59,7 +96,43 @@ export const projects = [
     category: "GenAI / NLP",
     icon: MessageSquare,
     color: "pink",
-    link: "https://github.com/SaadH-077/SmartCourseAdvisor-RAG"
+    link: "https://github.com/SaadH-077/SmartCourseAdvisor-RAG",
+    architecture: {
+      nodes: [
+        { id: 'ui', label: 'Student Interface', type: 'client', desc: 'Gradio/React Web UI for query input' },
+        { id: 'orch', label: 'LangChain Orchestrator', type: 'server', desc: 'Context retrieval & prompt construction' },
+        { id: 'llm', label: 'Mistral-7B', type: 'ai', desc: 'LLM for reasoning & response generation' },
+        { id: 'vec', label: 'ChromaDB', type: 'database', desc: 'Vector store for course catalog embeddings' }
+      ],
+      edges: []
+    },
+    codeSnippet: {
+      language: "python",
+      code: `class RAGAdvisor:
+    def __init__(self, model_name="mistralai/Mistral-7B-v0.1"):
+        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self.db = Chroma(persist_directory="./db", embedding_function=self.embeddings)
+        self.llm = HuggingFacePipeline.from_model_id(
+            model_id=model_name,
+            task="text-generation",
+            pipeline_kwargs={"max_new_tokens": 512}
+        )
+    
+    def get_recommendation(self, query, student_history):
+        # Retrieve relevant course descriptions
+        docs = self.db.similarity_search(query, k=3)
+        context = "\\n".join([d.page_content for d in docs])
+        
+        # Construct prompt with history and context
+        prompt = f"""
+        Student History: {student_history}
+        Available Courses: {context}
+        Question: {query}
+        
+        Recommend courses that align with the student's history and query:
+        """
+        return self.llm(prompt)`
+    }
   },
   {
     title: "Vision3D Landmark Recon",
@@ -77,7 +150,40 @@ export const projects = [
     category: "Software Engineering",
     icon: Layout,
     color: "cyan",
-    link: "https://github.com/SaadH-077/EmployNet"
+    link: "https://github.com/SaadH-077/EmployNet",
+    architecture: {
+      nodes: [
+        { id: 'web', label: 'Admin Dashboard', type: 'client', desc: 'React.js SPA with Redux state management' },
+        { id: 'api', label: 'Express REST API', type: 'server', desc: 'Node.js backend with JWT Auth middleware' },
+        { id: 'db', label: 'MongoDB Atlas', type: 'database', desc: 'NoSQL database for employee records' }
+      ],
+      edges: []
+    },
+    codeSnippet: {
+      language: "javascript",
+      code: `const authMiddleware = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization').replace('Bearer ', '');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    // Check role-based access
+    if (req.path.includes('/admin') && user.role !== 'admin') {
+      return res.status(403).send({ error: 'Access denied. Admin only.' });
+    }
+
+    req.token = token;
+    req.user = user;
+    next();
+  } catch (e) {
+    res.status(401).send({ error: 'Please authenticate.' });
+  }
+};`
+    }
   },
   {
     title: "TradeBiz Platform",
@@ -86,7 +192,97 @@ export const projects = [
     category: "Software Engineering",
     icon: BarChart3,
     color: "blue",
-    link: "https://github.com/SaadH-077/tradebiz-mern"
+    link: "https://github.com/SaadH-077/tradebiz-mern",
+    architecture: {
+      nodes: [
+        { id: 'ui', label: 'Trading Dashboard', type: 'client', desc: 'React + TypeScript UI with real-time charts' },
+        { id: 'ws', label: 'Socket.IO Server', type: 'server', desc: 'Real-time bidirectional event handling' },
+        { id: 'api', label: 'REST API', type: 'server', desc: 'Express.js backend for order management' },
+        { id: 'db', label: 'MongoDB', type: 'database', desc: 'Transactional data storage' }
+      ],
+      edges: []
+    },
+    codeSnippet: {
+      language: "typescript",
+      code: `// WebSocket Order Handler
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+
+  socket.on('subscribe_market', (symbol: string) => {
+    socket.join(symbol);
+    // Send initial snapshot
+    const snapshot = await OrderBook.getSnapshot(symbol);
+    socket.emit('market_snapshot', snapshot);
+  });
+
+  socket.on('place_order', async (order: Order) => {
+    try {
+      const result = await MatchingEngine.process(order);
+      
+      // Broadcast updates to subscribers
+      io.to(order.symbol).emit('order_book_update', result.bookUpdates);
+      
+      // Notify specific user
+      if (result.trade) {
+        io.to(result.trade.buyerId).emit('trade_executed', result.trade);
+        io.to(result.trade.sellerId).emit('trade_executed', result.trade);
+      }
+    } catch (error) {
+      socket.emit('order_error', { message: error.message });
+    }
+  });
+});`
+    }
+  },
+  {
+    title: "Saad.AI Portfolio",
+    desc: "The recursive architecture of this very website. A React-based cyber-interface featuring 3D visualization, terminal emulation, and agentic UI patterns.",
+    tags: ["React", "Three.js", "Framer Motion", "Vite"],
+    category: "Software Engineering",
+    icon: Code2,
+    color: "cyan",
+    link: "https://github.com/SaadH-077/saad-ai-portfolio",
+    architecture: {
+      nodes: [
+        { id: 'client', label: 'React Client', type: 'client', desc: 'Vite-powered SPA with Framer Motion animations' },
+        { id: '3d', label: 'Three.js Engine', type: 'ai', desc: 'R3F Canvas for Holographic Globe & Neural Background' },
+        { id: 'state', label: 'State Manager', type: 'service', desc: 'React Hooks & Context for Terminal/Guide state' },
+        { id: 'deploy', label: 'Vercel Edge', type: 'server', desc: 'CI/CD Pipeline & Global CDN Distribution' }
+      ],
+      edges: []
+    },
+    codeSnippet: {
+      language: "jsx",
+      code: `// FIXED
+function App() {
+  const [loading, setLoading] = useState(true);
+  const [terminalMode, setTerminalMode] = useState(false);
+
+  // Initialize the Cyber-Interface
+  useEffect(() => {
+    const initSystem = async () => {
+      await loadAssets();
+      setLoading(false);
+    };
+    initSystem();
+  }, []);
+
+  return (
+    <div className="cyber-container">
+      <NeuralBackground />
+      <AnimatePresence>
+        {loading ? <Preloader /> : (
+          <MainInterface>
+            <HeroSection />
+            <ArchitectureView />
+            <TerminalOverlay active={terminalMode} />
+          </MainInterface>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}`
+    }
   }
 ];
 

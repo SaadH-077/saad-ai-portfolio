@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Activity, 
@@ -17,7 +17,8 @@ import {
   Brain,
   ChevronDown,
   ChevronUp,
-  Gamepad2
+  Gamepad2,
+  Zap
 } from 'lucide-react';
 
 // Components
@@ -36,7 +37,13 @@ import Preloader from './components/ui/Preloader';
 import ScrollToTop from './components/ui/ScrollToTop';
 import { Section, SectionHeading } from './components/ui/Section';
 import ChatWidget from './components/ui/ChatWidget';
-import SnakeGame from './components/game/SnakeGame';
+import NeuralClassifierGame from './components/game/NeuralClassifierGame';
+import CommandPalette from './components/ui/CommandPalette';
+import ProjectCard from './components/ui/ProjectCard';
+import ArchitectureView from './components/ui/ArchitectureView';
+import TerminalMode from './components/ui/TerminalMode';
+import SystemMonitor from './components/ui/SystemMonitor';
+import UserGuide from './components/ui/UserGuide';
 
 // Assets
 import profileImage from './assets/profile2.jpg';
@@ -104,7 +111,35 @@ const App = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isGameOpen, setIsGameOpen] = useState(false);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
   
+  useEffect(() => {
+    // Check if user has visited before
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      // Show guide on first visit after a short delay
+      setTimeout(() => setIsGuideOpen(true), 1500);
+      localStorage.setItem('hasVisited', 'true');
+    }
+
+    const handleKeyDown = (e) => {
+      const isInput = ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
+      // Allow typing ` in chat if terminal is closed
+      if ((e.key === '`' || e.key === '~') && isInput && !isTerminalOpen) {
+        return;
+      }
+
+      if (e.key === '`' || e.key === '~') {
+        e.preventDefault();
+        setIsTerminalOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isTerminalOpen]);
+
   const categories = ['All', 'ML/DL', 'GenAI / NLP', 'Computer Vision', 'Software Engineering'];
 
   const filteredProjects = activeCategory === 'All' 
@@ -119,7 +154,17 @@ const App = () => {
         {isLoading && <Preloader setIsLoading={setIsLoading} />}
       </AnimatePresence>
 
-      <SnakeGame isOpen={isGameOpen} onClose={() => setIsGameOpen(false)} />
+      <CommandPalette />
+      <TerminalMode isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
+      <SystemMonitor />
+      <UserGuide isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+      <NeuralClassifierGame isOpen={isGameOpen} onClose={() => setIsGameOpen(false)} />
+      {selectedProject && (
+        <ArchitectureView 
+          project={selectedProject} 
+          onClose={() => setSelectedProject(null)} 
+        />
+      )}
 
       {!isLoading && (
         <motion.div
@@ -128,7 +173,7 @@ const App = () => {
           transition={{ duration: 0.5 }}
         >
           <NeuralBackground />
-          <Navbar />
+          <Navbar onOpenGuide={() => setIsGuideOpen(true)} />
           <ScrollToTop />
 
           <main>
@@ -179,6 +224,9 @@ const App = () => {
             <div className="absolute top-24 right-6 lg:right-12 flex flex-col items-end gap-2 z-20 pointer-events-none mix-blend-difference">
                <span className="text-[10px] font-mono text-slate-400 tracking-widest">[ LOC: 31.5°N, 74.3°E ]</span>
                <span className="text-[10px] font-mono text-slate-600 tracking-widest">LAHORE, PK</span>
+               <div className="mt-2 px-2 py-1 border border-white/10 rounded bg-white/5 backdrop-blur-sm flex items-center gap-2">
+                 <span className="text-[10px] font-mono text-slate-400">CMD + K</span>
+               </div>
             </div>
 
             <div className="absolute bottom-12 left-6 lg:left-12 hidden lg:flex flex-col gap-6 z-20 pointer-events-auto">
@@ -226,8 +274,8 @@ const App = () => {
                     className="group relative px-8 py-3 bg-transparent border border-white/10 rounded-full backdrop-blur-md transition-all flex items-center gap-2 overflow-hidden hover:border-cyan-500/50"
                   >
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Gamepad2 size={18} className="text-slate-300 group-hover:text-cyan-400 transition-colors" />
-                    <span className="text-sm font-mono text-slate-300 group-hover:text-white transition-colors">SIMULATION</span>
+                    <Cpu size={18} className="text-slate-300 group-hover:text-cyan-400 transition-colors" />
+                    <span className="text-sm font-mono text-slate-300 group-hover:text-white transition-colors">NEURAL ARCHITECT</span>
                   </button>
                 </div>
 
@@ -292,6 +340,38 @@ const App = () => {
                   <div>
                     <span className="text-[10px] font-mono text-slate-500 uppercase">Education</span>
                     <p className="text-slate-300 flex items-center gap-1"><GraduationCap size={12} className="text-purple-500"/>LUMS</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-white/5">
+                  <div className="relative p-[1px] rounded-xl overflow-hidden group/oracle cursor-default">
+                    {/* Animated Gradient Border */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-purple-500 to-cyan-500 opacity-40 group-hover/oracle:opacity-100 transition-opacity duration-500 animate-gradient-xy" />
+                    
+                    <div className="relative bg-[#0a0a0c] rounded-xl p-4 flex items-center justify-between gap-4 h-full">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 shrink-0 rounded-lg bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.4)] group-hover/oracle:scale-110 transition-transform duration-300">
+                          <Award className="text-white" size={24} />
+                        </div>
+                        <div>
+                          <h4 className="text-white font-bold text-sm tracking-wide flex items-center gap-2">
+                            ORACLE CERTIFIED
+                            <span className="px-1.5 py-0.5 rounded text-[8px] bg-gradient-to-r from-red-500 to-orange-500 text-white font-mono font-bold shadow-sm">PRO</span>
+                          </h4>
+                          <p className="text-[10px] text-slate-400 font-mono mt-1 group-hover/oracle:text-slate-300 transition-colors">
+                            Generative AI & Cloud Professional
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="hidden sm:flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5 border border-white/10 backdrop-blur-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                          <span className="text-[10px] font-mono text-slate-300 tracking-wider">VERIFIED</span>
+                        </div>
+                        <span className="text-[9px] text-slate-500 font-mono">ID: OCI-2025</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -405,37 +485,10 @@ const App = () => {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <HoverCard className="flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${project.color}-500/10 text-${project.color}-400`}>
-                        <project.icon size={20} />
-                      </div>
-                      <span className="text-[10px] font-mono border border-white/10 px-2 py-1 rounded text-slate-500 uppercase">
-                        {project.category}
-                      </span>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-                    <p className="text-slate-400 text-sm mb-6 flex-grow leading-relaxed">
-                      {project.desc}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.map(tag => (
-                        <span key={tag} className="text-[10px] text-slate-500 bg-white/5 px-2 py-1 rounded">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <a 
-                      href={project.link} 
-                      target="_blank"
-                      className="mt-auto w-full py-2 border border-slate-700 rounded flex items-center justify-center gap-2 text-sm text-white hover:bg-white hover:text-black transition-all font-bold group/btn"
-                    >
-                      <Github size={16} className="group-hover/btn:text-black transition-colors" /> View Code
-                    </a>
-                  </HoverCard>
+                  <ProjectCard 
+                    project={project} 
+                    onViewArchitecture={setSelectedProject}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -481,9 +534,14 @@ const App = () => {
               {/* Certifications - Full Width */}
               <div className="md:col-span-2">
                 <HoverCard className="border-yellow-500/20 bg-yellow-900/5">
-                  <div className="flex items-center gap-3 mb-4 text-yellow-400">
-                    <Award size={20} />
-                    <h3 className="font-bold text-white">Certifications</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3 text-yellow-400">
+                      <Award size={20} />
+                      <h3 className="font-bold text-white">Certifications</h3>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-mono animate-pulse flex items-center gap-1">
+                      <MousePointer2 size={10} /> Click to Verify
+                    </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {certifications.map((cert, idx) => (
@@ -539,47 +597,77 @@ const App = () => {
 
         {/* CONTACT SECTION */}
         <Section id="contact">
-          <div className="max-w-4xl mx-auto text-center relative">
+          <div className="max-w-5xl mx-auto relative">
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] -z-10 opacity-50 pointer-events-none">
                 <HolographicGlobe />
              </div>
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-gradient-to-r from-cyan-500/10 to-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
-             <SectionHeading title="Let's Build the Future" subtitle="CONTACT" />
+             <SectionHeading title="Initialize Uplink" subtitle="CONTACT" />
             
-            <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
-              I am open to discussing technical collaborations, AI research, or complex engineering challenges.
-            </p>
-
-            <div className="flex flex-col md:flex-row gap-6 justify-center relative z-10">
-              <a 
-                href="mailto:saadharoonjehangir@gmail.com"
-                className="group px-8 py-5 bg-[#0a0a0c] border border-slate-700 rounded-xl hover:border-purple-500 transition-all hover:scale-105 flex items-center gap-3 text-white font-bold text-lg justify-center"
-              >
-                <Mail className="text-purple-400 group-hover:text-purple-300 transition-colors" /> Send Email
-              </a>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 relative z-10">
               
-              <a 
-                href="https://www.linkedin.com/in/muhammad-saad-haroon-5b38a1241/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group px-8 py-5 bg-[#0077b5] rounded-xl hover:scale-105 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center gap-3 text-white font-bold text-lg justify-center"
-              >
-                <Linkedin className="text-white" /> LinkedIn
-              </a>
+              {/* Terminal Input Simulation */}
+              <div className="bg-[#0a0a0c] border border-slate-800 rounded-xl p-6 font-mono text-sm relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-cyan-500" />
+                <div className="flex gap-2 mb-4">
+                  <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                </div>
+                <div className="space-y-2 text-slate-400">
+                  <p><span className="text-green-500">➜</span> <span className="text-purple-400">~</span> initializing secure connection...</p>
+                  <p><span className="text-green-500">➜</span> <span className="text-purple-400">~</span> resolving host: <span className="text-white">saad.ai</span></p>
+                  <p><span className="text-green-500">➜</span> <span className="text-purple-400">~</span> status: <span className="text-green-400">online</span></p>
+                  <p className="animate-pulse"><span className="text-green-500">➜</span> <span className="text-purple-400">~</span> awaiting input_</p>
+                </div>
+                
+                <div className="mt-8 grid grid-cols-1 gap-4">
+                  <a href="mailto:saadharoonjehangir@gmail.com" className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded hover:border-purple-500/50 hover:bg-purple-500/10 transition-all group/item">
+                    <span className="flex items-center gap-2 text-slate-300"><Mail size={16} /> Send Email</span>
+                    <span className="text-xs text-slate-500 group-hover/item:text-purple-400">SMTP: CONNECT</span>
+                  </a>
+                  <a href="https://www.linkedin.com/in/muhammad-saad-haroon-5b38a1241/" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded hover:border-blue-500/50 hover:bg-blue-500/10 transition-all group/item">
+                    <span className="flex items-center gap-2 text-slate-300"><Linkedin size={16} /> LinkedIn</span>
+                    <span className="text-xs text-slate-500 group-hover/item:text-blue-400">NET: LINKED</span>
+                  </a>
+                  <a href="https://github.com/SaadH-077" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded hover:border-slate-500/50 hover:bg-slate-500/10 transition-all group/item">
+                    <span className="flex items-center gap-2 text-slate-300"><Github size={16} /> GitHub</span>
+                    <span className="text-xs text-slate-500 group-hover/item:text-white">GIT: PUSH</span>
+                  </a>
+                </div>
+              </div>
 
-              <a 
-                href="https://github.com/SaadH-077"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group px-8 py-5 bg-[#24292e] rounded-xl hover:scale-105 transition-all shadow-lg hover:shadow-slate-500/30 flex items-center gap-3 text-white font-bold text-lg justify-center"
-              >
-                <Github className="text-white" /> GitHub
-              </a>
-            </div>
+              {/* Quick Message Form / Info */}
+              <div className="flex flex-col justify-between">
+                <div className="bg-[#0a0a0c] border border-slate-800 rounded-xl p-6 relative overflow-hidden">
+                   <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                     <Activity className="text-cyan-400" /> Transmission Status
+                   </h3>
+                   <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                     I am currently available for freelance projects, research collaborations, and full-time engineering roles. 
+                     Response time is typically under 24 hours.
+                   </p>
+                   
+                   <div className="grid grid-cols-2 gap-4">
+                     <div className="p-3 bg-cyan-900/10 border border-cyan-500/20 rounded-lg">
+                       <span className="text-[10px] text-cyan-400 uppercase tracking-wider">Location</span>
+                       <p className="text-white font-mono text-sm">Lahore, PK</p>
+                     </div>
+                     <div className="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
+                       <span className="text-[10px] text-purple-400 uppercase tracking-wider">Timezone</span>
+                       <p className="text-white font-mono text-sm">GMT+5 (PKT)</p>
+                     </div>
+                   </div>
+                </div>
 
-            <div className="mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-slate-600 font-mono">
-              <span>LAHORE, PAKISTAN</span>
-              <span>© {new Date().getFullYear()} MUHAMMAD SAAD HAROON</span>
+                <div className="mt-auto pt-8 flex justify-between items-end text-xs text-slate-600 font-mono">
+                  <div className="flex flex-col">
+                    <span>SYSTEM ID: SH-2025</span>
+                    <span>SECURE CHANNEL ESTABLISHED</span>
+                  </div>
+                  <span>© {new Date().getFullYear()} SAAD.AI</span>
+                </div>
+              </div>
+
             </div>
           </div>
         </Section>

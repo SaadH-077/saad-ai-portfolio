@@ -25,7 +25,7 @@ const HoverCard = ({ children, className = "", onClick }) => {
           background: useMotionTemplate`radial-gradient(500px circle at ${mouseX}px ${mouseY}px, rgba(189, 0, 255, 0.15), transparent 40%)`
         }}
       />
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10 h-full">{children}</div>
     </div>
   );
 };

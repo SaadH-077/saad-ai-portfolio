@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Terminal, Menu, X } from 'lucide-react';
+import { Terminal, Menu, X, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import profileImage from '../../assets/profile2.jpg';
 
-const Navbar = () => {
+const Navbar = ({ onOpenGuide }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -23,8 +24,9 @@ const Navbar = () => {
 
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-lg animate-pulse">
-            SH
+          <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg relative group">
+            {/* <div className="absolute inset-0 bg-purple-500/20 group-hover:bg-transparent transition-colors" /> */}
+            <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
           </div>
           <div className="flex flex-col">
             <span className="text-white font-bold tracking-tight text-sm">MUHAMMAD SAAD HAROON</span>
@@ -33,25 +35,47 @@ const Navbar = () => {
         </div>
         
         {/* Desktop Menu */}
-        <div className="hidden md:flex gap-8 text-xs font-medium text-slate-400 font-mono">
-          {navLinks.map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-purple-400 transition-colors uppercase">
-              {item}
+        <div className="hidden md:flex items-center gap-6">
+          <div className="flex gap-6 text-xs font-medium text-slate-400 font-mono">
+            {navLinks.map((item) => (
+              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-purple-400 transition-colors uppercase">
+                {item}
+              </a>
+            ))}
+          </div>
+
+          <div className="h-4 w-[1px] bg-white/10" />
+
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={onOpenGuide}
+              className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+              title="System Manual"
+            >
+              <HelpCircle size={18} />
+            </button>
+            
+            <a href="#contact" className="flex px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded border border-white/10 hover:border-purple-500/50 transition-all items-center gap-2">
+              <Terminal size={14} /> CONTACT
             </a>
-          ))}
+          </div>
         </div>
 
-        <a href="#contact" className="hidden sm:flex px-5 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded border border-white/10 hover:border-purple-500/50 transition-all items-center gap-2">
-          <Terminal size={14} /> CONTACT
-        </a>
-
         {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden text-white p-2"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <button 
+            onClick={onOpenGuide}
+            className="text-slate-400 hover:text-white"
+          >
+            <HelpCircle size={20} />
+          </button>
+          <button 
+            className="text-white p-2"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu Overlay */}
