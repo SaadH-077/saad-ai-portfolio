@@ -54,9 +54,10 @@ async function callHuggingFace(userQuery) {
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      console.error("API Error Details:", response.status, err);
-      throw new Error(`API Error: ${response.status}`);
+      const errText = await response.text();
+      console.error("API Error Details:", response.status, errText);
+      // Throw a more specific error to be caught below
+      throw new Error(`Server Error (${response.status}): ${errText || 'Unknown error'}`);
     }
 
     const data = await response.json();
@@ -71,7 +72,7 @@ async function callHuggingFace(userQuery) {
     return botResponse;
   } catch (error) {
     console.error(error);
-    return "⚠️ Connection Error: Unable to reach the AI server. Please try again later.";
+    return `⚠️ Error: ${error.message || "Connection failed"}. (If on localhost, use 'vercel dev')`;
   }
 }
 
