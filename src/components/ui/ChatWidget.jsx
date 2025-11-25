@@ -41,7 +41,8 @@ If the answer is not in the context, say "I don't have that information in my re
 
 async function callHuggingFace(userQuery) {
   const systemPrompt = generateSystemContext();
-  const fullPrompt = `<s>[INST] <<SYS>>\n${systemPrompt}\n<</SYS>>\n\nUser Question: ${userQuery} [/INST]`;
+  // Qwen 2.5 uses ChatML format
+  const fullPrompt = `<|im_start|>system\n${systemPrompt}<|im_end|>\n<|im_start|>user\n${userQuery}<|im_end|>\n<|im_start|>assistant\n`;
 
   try {
     // Call our own Vercel Serverless Function
@@ -61,12 +62,15 @@ async function callHuggingFace(userQuery) {
     }
 
     const data = await response.json();
-    // Mistral Instruct usually returns an array with 'generated_text'
+    // API usually returns an array with 'generated_text'
     let botResponse = data[0]?.generated_text || "No response generated.";
     
-    // Cleanup if the model returns the prompt (sometimes happens with different inference endpoints)
-    if (botResponse.includes("[/INST]")) {
-      botResponse = botResponse.split("[/INST]").pop().trim();
+    // Cleanup if the model returns the prompt
+    if (botResponse.includes("<|im_start|>assistant")) {
+      botResponse = botResponse.split("<|im_start|>assistant").pop().trim();
+    } else if (botResponse.includes(userQuery)) {
+       // Fallback cleanup if prompt is included but marker is missing/malformed
+       botResponse = botResponse.substring(botResponse.indexOf(userQuery) + userQuery.length).trim();
     }
     
     return botResponse;
