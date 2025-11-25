@@ -412,7 +412,7 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 font-sans"
     >
-      <div className="w-full max-w-md relative h-full max-h-[800px] flex flex-col py-4">
+      <div className="w-full max-w-md md:max-w-5xl relative h-full max-h-[800px] md:max-h-[90vh] flex flex-col justify-between py-4 md:py-8">
         
         {/* LOADING STATE */}
         {gameState === 'loading' && (
@@ -421,7 +421,13 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
 
         {/* TUTORIAL STATE */}
         {gameState === 'tutorial' && (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-8 p-6 animate-in fade-in duration-500">
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-8 p-6 animate-in fade-in duration-500 relative">
+            <button 
+              onClick={onClose} 
+              className="absolute top-0 right-0 p-2 text-slate-500 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
             <div className="w-24 h-24 bg-purple-500/20 rounded-full flex items-center justify-center border border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
               <Brain size={48} className="text-purple-400" />
             </div>
@@ -485,7 +491,7 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-3 md:gap-8">
                 <MetricBar 
                   label="ACCURACY" 
                   value={metrics.accuracy} 
@@ -511,7 +517,7 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
             </div>
 
             {/* Game Area */}
-            <div className="relative flex-grow flex items-center justify-center perspective-1000 min-h-0 my-4">
+            <div className="relative flex-grow flex items-center justify-center perspective-1000 min-h-0 my-4 md:my-8">
               
               {/* Game Over Screen */}
               {gameState === 'gameover' && (
@@ -528,12 +534,20 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
                     <div className="text-xs text-purple-400 font-mono">Rank: {epoch > 15 ? "SENIOR ARCHITECT" : epoch > 10 ? "ML ENGINEER" : "JUNIOR DEV"}</div>
                   </div>
 
-                  <button 
-                    onClick={startGame}
-                    className="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-white font-bold tracking-wide transition-all flex items-center gap-2"
-                  >
-                    <RefreshCw size={16} /> REBOOT SYSTEM
-                  </button>
+                  <div className="flex gap-4">
+                    <button 
+                      onClick={startGame}
+                      className="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-white font-bold tracking-wide transition-all flex items-center gap-2"
+                    >
+                      <RefreshCw size={16} /> REBOOT SYSTEM
+                    </button>
+                    <button 
+                      onClick={onClose}
+                      className="px-8 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-full text-red-400 font-bold tracking-wide transition-all flex items-center gap-2"
+                    >
+                      <X size={16} /> EXIT
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -559,29 +573,29 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
                       if (swipe > 100) handleChoice('right');
                       else if (swipe < -100) handleChoice('left');
                     }}
-                    className="absolute w-full max-w-[320px] aspect-[3/4.5] bg-[#1a1a1d] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-grab active:cursor-grabbing z-20"
+                    className="absolute w-full max-w-[320px] md:max-w-[600px] aspect-[3/4.5] md:aspect-[5/3] max-h-full bg-[#1a1a1d] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden cursor-grab active:cursor-grabbing z-20"
                   >
                     {/* Card Front */}
-                    <div className={`h-full w-full p-6 flex flex-col items-center relative ${showInfo ? 'blur-sm opacity-20' : 'opacity-100'} transition-all duration-300`}>
-                      <div className={`w-24 h-24 rounded-full bg-${currentScenario.color}-500/10 flex items-center justify-center mb-8 ring-1 ring-${currentScenario.color}-500/50 shadow-[0_0_30px_rgba(0,0,0,0.5)] shrink-0`}>
-                        <currentScenario.icon size={48} className={`text-${currentScenario.color}-400`} />
+                    <div className={`h-full w-full p-6 md:p-8 flex flex-col items-center relative ${showInfo ? 'blur-sm opacity-20' : 'opacity-100'} transition-all duration-300`}>
+                      <div className={`w-24 h-24 md:w-20 md:h-20 rounded-full bg-${currentScenario.color}-500/10 flex items-center justify-center mb-6 md:mb-4 ring-1 ring-${currentScenario.color}-500/50 shadow-[0_0_30px_rgba(0,0,0,0.5)] shrink-0`}>
+                        <currentScenario.icon size={48} className={`text-${currentScenario.color}-400 md:w-10 md:h-10`} />
                       </div>
                       
-                      <div className="text-center space-y-2 mb-8">
-                        <span className={`text-[10px] font-mono px-2 py-1 rounded bg-${currentScenario.color}-500/20 text-${currentScenario.color}-300 border border-${currentScenario.color}-500/30`}>
+                      <div className="text-center space-y-2 mb-6 md:mb-4 flex-grow flex flex-col justify-center">
+                        <span className={`text-[10px] md:text-xs font-mono px-2 py-1 rounded bg-${currentScenario.color}-500/20 text-${currentScenario.color}-300 border border-${currentScenario.color}-500/30 self-center`}>
                           {currentScenario.concept}
                         </span>
-                        <h3 className="text-xl font-bold text-white leading-tight">{currentScenario.text}</h3>
+                        <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{currentScenario.text}</h3>
                       </div>
                       
-                      <div className="mt-auto w-full space-y-4">
-                         <div className="flex justify-between text-xs font-mono text-slate-500 border-t border-white/5 pt-4">
+                      <div className="mt-auto w-full space-y-4 shrink-0">
+                         <div className="flex justify-between text-xs md:text-sm font-mono text-slate-500 border-t border-white/5 pt-4">
                             <span>ID: {currentScenario.uid.toString().substr(2, 6)}</span>
                             <span>EPOCH: {epoch}</span>
                          </div>
                          <button 
                            onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
-                           className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs text-slate-300 flex items-center justify-center gap-2 transition-colors"
+                           className="w-full py-2 md:py-3 bg-white/5 hover:bg-white/10 rounded-lg text-xs md:text-sm text-slate-300 flex items-center justify-center gap-2 transition-colors"
                          >
                            <Info size={14} /> View Concept Details
                          </button>
@@ -609,49 +623,49 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
 
             {/* Abilities Bar */}
             {gameState === 'playing' && (
-              <div className="flex justify-center gap-4 mb-4 relative z-30">
+              <div className="flex justify-center gap-4 md:gap-8 mb-4 relative z-30">
                 <button 
                   onClick={() => useAbility('scan')}
                   disabled={researchPoints < 2 || scanActive}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${researchPoints >= 2 && !scanActive ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/20' : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'}`}
+                  className={`flex flex-col items-center gap-1 p-2 md:p-4 rounded-lg border transition-all ${researchPoints >= 2 && !scanActive ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/20' : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'}`}
                 >
-                  <Eye size={18} />
-                  <span className="text-[8px] font-mono">SCAN (2RP)</span>
+                  <Eye size={18} className="md:w-6 md:h-6" />
+                  <span className="text-[8px] md:text-xs font-mono">SCAN (2RP)</span>
                 </button>
                 <button 
                   onClick={() => useAbility('stabilize')}
                   disabled={researchPoints < 3}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${researchPoints >= 3 ? 'bg-green-500/10 border-green-500/50 text-green-400 hover:bg-green-500/20' : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'}`}
+                  className={`flex flex-col items-center gap-1 p-2 md:p-4 rounded-lg border transition-all ${researchPoints >= 3 ? 'bg-green-500/10 border-green-500/50 text-green-400 hover:bg-green-500/20' : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'}`}
                 >
-                  <Shield size={18} />
-                  <span className="text-[8px] font-mono">STABILIZE (3RP)</span>
+                  <Shield size={18} className="md:w-6 md:h-6" />
+                  <span className="text-[8px] md:text-xs font-mono">STABILIZE (3RP)</span>
                 </button>
                 <button 
                   onClick={() => useAbility('overclock')}
                   disabled={researchPoints < 3}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${researchPoints >= 3 ? 'bg-purple-500/10 border-purple-500/50 text-purple-400 hover:bg-purple-500/20' : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'}`}
+                  className={`flex flex-col items-center gap-1 p-2 md:p-4 rounded-lg border transition-all ${researchPoints >= 3 ? 'bg-purple-500/10 border-purple-500/50 text-purple-400 hover:bg-purple-500/20' : 'bg-white/5 border-white/5 text-slate-600 cursor-not-allowed'}`}
                 >
-                  <BatteryCharging size={18} />
-                  <span className="text-[8px] font-mono">BOOST (3RP)</span>
+                  <BatteryCharging size={18} className="md:w-6 md:h-6" />
+                  <span className="text-[8px] md:text-xs font-mono">BOOST (3RP)</span>
                 </button>
               </div>
             )}
 
-            {/* Mobile Controls */}
+            {/* Game Controls */}
             {gameState === 'playing' && (
-              <div className="flex justify-center gap-4 pb-2 shrink-0 relative z-30 w-full px-4">
+              <div className="flex flex-wrap justify-center gap-4 md:gap-12 pb-2 shrink-0 relative z-30 w-full px-4">
                  <button 
                    onClick={() => handleChoice('left')}
-                   className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 group hover:bg-red-500/10 hover:border-red-500/30 transition-all"
+                   className="flex-1 min-w-[140px] py-3 md:py-6 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 group hover:bg-red-500/10 hover:border-red-500/30 transition-all"
                  >
                    <div className="flex items-center gap-2">
-                     <X size={18} className="text-slate-400 group-hover:text-red-400" />
-                     <span className="text-xs font-mono text-slate-400 group-hover:text-white truncate max-w-[120px]">
+                     <X size={18} className="text-slate-400 group-hover:text-red-400 md:w-6 md:h-6" />
+                     <span className="text-xs md:text-lg font-mono text-slate-400 group-hover:text-white truncate max-w-[120px] md:max-w-none">
                        {currentScenario?.left.text}
                      </span>
                    </div>
                    {scanActive && (
-                     <div className="flex gap-2 text-[9px] font-mono text-slate-500">
+                     <div className="flex gap-2 text-[9px] md:text-xs font-mono text-slate-500">
                         {currentScenario?.left.effects.accuracy && <span className={currentScenario.left.effects.accuracy > 0 ? 'text-green-400' : 'text-red-400'}>A:{currentScenario.left.effects.accuracy}</span>}
                         {currentScenario?.left.effects.compute && <span className={currentScenario.left.effects.compute > 0 ? 'text-green-400' : 'text-red-400'}>C:{currentScenario.left.effects.compute}</span>}
                         {currentScenario?.left.effects.stability && <span className={currentScenario.left.effects.stability > 0 ? 'text-green-400' : 'text-red-400'}>S:{currentScenario.left.effects.stability}</span>}
@@ -661,16 +675,16 @@ const NeuralArchitectGame = ({ isOpen, onClose }) => {
 
                  <button 
                    onClick={() => handleChoice('right')}
-                   className="flex-1 py-3 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 group hover:bg-green-500/10 hover:border-green-500/30 transition-all"
+                   className="flex-1 min-w-[140px] py-3 md:py-6 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1 group hover:bg-green-500/10 hover:border-green-500/30 transition-all"
                  >
                    <div className="flex items-center gap-2">
-                     <span className="text-xs font-mono text-slate-400 group-hover:text-white truncate max-w-[120px]">
+                     <span className="text-xs md:text-lg font-mono text-slate-400 group-hover:text-white truncate max-w-[120px] md:max-w-none">
                        {currentScenario?.right.text}
                      </span>
-                     <Check size={18} className="text-slate-400 group-hover:text-green-400" />
+                     <Check size={18} className="text-slate-400 group-hover:text-green-400 md:w-6 md:h-6" />
                    </div>
                    {scanActive && (
-                     <div className="flex gap-2 text-[9px] font-mono text-slate-500">
+                     <div className="flex gap-2 text-[9px] md:text-xs font-mono text-slate-500">
                         {currentScenario?.right.effects.accuracy && <span className={currentScenario.right.effects.accuracy > 0 ? 'text-green-400' : 'text-red-400'}>A:{currentScenario.right.effects.accuracy}</span>}
                         {currentScenario?.right.effects.compute && <span className={currentScenario.right.effects.compute > 0 ? 'text-green-400' : 'text-red-400'}>C:{currentScenario.right.effects.compute}</span>}
                         {currentScenario?.right.effects.stability && <span className={currentScenario.right.effects.stability > 0 ? 'text-green-400' : 'text-red-400'}>S:{currentScenario.right.effects.stability}</span>}

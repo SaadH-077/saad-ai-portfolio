@@ -106,7 +106,7 @@ const HeroAgenticBrain = () => {
     scene.add(coreParticles);
 
     // --- GALAXY BACKGROUND ---
-    const galaxyCount = 25000;
+    const galaxyCount = 35000;
     const galaxyGeo = new THREE.BufferGeometry();
     const galaxyPos = new Float32Array(galaxyCount * 3);
     const galaxyColors = new Float32Array(galaxyCount * 3);

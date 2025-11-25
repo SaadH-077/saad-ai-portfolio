@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Terminal, Menu, X, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
-import profileImage from '../../assets/profile2.jpg';
+import profileImage from '../../assets/profile4.jpg';
 
 const Navbar = ({ onOpenGuide }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,7 @@ const Navbar = ({ onOpenGuide }) => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shadow-lg relative group">
             {/* <div className="absolute inset-0 bg-purple-500/20 group-hover:bg-transparent transition-colors" /> */}
-            <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+            <img src={profileImage} alt="Profile" className="w-full h-full object-cover object-[center_20%]" />
           </div>
           <div className="flex flex-col">
             <span className="text-white font-bold tracking-tight text-sm">MUHAMMAD SAAD HAROON</span>

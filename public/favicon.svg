@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="45" stroke="url(#grad)" stroke-width="5" fill="#050508" />
+  <path d="M50 25 L75 37.5 L75 62.5 L50 75 L25 62.5 L25 37.5 Z" stroke="url(#grad)" stroke-width="3" fill="none" />
+  <circle cx="50" cy="50" r="8" fill="url(#grad)" />
+  
+  <!-- Nodes -->
+  <circle cx="50" cy="25" r="4" fill="#a855f7" />
+  <circle cx="75" cy="37.5" r="4" fill="#06b6d4" />
+  <circle cx="75" cy="62.5" r="4" fill="#a855f7" />
+  <circle cx="50" cy="75" r="4" fill="#06b6d4" />
+  <circle cx="25" cy="62.5" r="4" fill="#a855f7" />
+  <circle cx="25" cy="37.5" r="4" fill="#06b6d4" />
+  
+  <!-- Connections -->
+  <line x1="50" y1="50" x2="50" y2="25" stroke="url(#grad)" stroke-width="2" opacity="0.8" />
+  <line x1="50" y1="50" x2="75" y2="37.5" stroke="url(#grad)" stroke-width="2" opacity="0.8" />
+  <line x1="50" y1="50" x2="75" y2="62.5" stroke="url(#grad)" stroke-width="2" opacity="0.8" />
+  <line x1="50" y1="50" x2="50" y2="75" stroke="url(#grad)" stroke-width="2" opacity="0.8" />
+  <line x1="50" y1="50" x2="25" y2="62.5" stroke="url(#grad)" stroke-width="2" opacity="0.8" />
+  <line x1="50" y1="50" x2="25" y2="37.5" stroke="url(#grad)" stroke-width="2" opacity="0.8" />
+</svg>
