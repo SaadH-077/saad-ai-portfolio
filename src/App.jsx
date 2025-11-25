@@ -18,15 +18,18 @@ import {
   ChevronDown,
   ChevronUp,
   Gamepad2,
-  Zap
+  Zap,
+  Rocket
 } from 'lucide-react';
 
 // Components
 import NeuralBackground from './components/3d/NeuralBackground';
 import HeroAgenticBrain from './components/3d/HeroAgenticBrain';
+import GalaxyExplorer from './components/3d/GalaxyExplorer';
 import HyperMatrix from './components/3d/HyperMatrix';
 import CyberHelix from './components/3d/CyberHelix';
 import HolographicGlobe from './components/3d/HolographicGlobe';
+import HeroTitle from './components/ui/HeroTitle';
 import InteractiveTimeline from './components/ui/InteractiveTimeline';
 import Navbar from './components/ui/Navbar';
 import HoverCard from './components/ui/HoverCard';
@@ -46,7 +49,7 @@ import SystemMonitor from './components/ui/SystemMonitor';
 import UserGuide from './components/ui/UserGuide';
 
 // Assets
-import profileImage from './assets/profile2.jpg';
+import profileImage from './assets/profile4.jpg';
 import cvFile from './assets/Muhammad Saad Haroon - EuroPassCV 12_10_2025.pdf';
 
 // Data
@@ -111,6 +114,7 @@ const App = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isGameOpen, setIsGameOpen] = useState(false);
+  const [isExplorerOpen, setIsExplorerOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -159,6 +163,9 @@ const App = () => {
       <SystemMonitor />
       <UserGuide isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
       <NeuralClassifierGame isOpen={isGameOpen} onClose={() => setIsGameOpen(false)} />
+      <AnimatePresence>
+        {isExplorerOpen && <GalaxyExplorer onClose={() => setIsExplorerOpen(false)} />}
+      </AnimatePresence>
       {selectedProject && (
         <ArchitectureView 
           project={selectedProject} 
@@ -249,19 +256,11 @@ const App = () => {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto pointer-events-none mb-12"
+              className="relative z-10 flex flex-col items-center text-center px-6 max-w-7xl mx-auto pointer-events-none mb-12"
             >
               <div className="pointer-events-auto w-full flex flex-col items-center">
                 
-                <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter leading-[0.8] mb-6 relative z-20" style={{ filter: 'drop-shadow(0 0 15px rgba(0,0,0,0.9)) drop-shadow(0 0 40px rgba(0,0,0,0.6))' }}>
-                  SAAD<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-cyan-500 to-purple-500 animate-gradient-x">.AI</span>
-                </h1>
-                
-                <div className="flex items-center justify-center gap-4 text-lg md:text-xl font-light text-slate-300 mb-10 h-8 font-mono tracking-wide">
-                  <span className="text-purple-500 font-bold">{'>'}</span>
-                  <TypewriterText texts={["Agentic AI Architect", "Machine Learning Engineer", "Full Stack Developer"]} />
-                  <span className="w-1.5 h-5 bg-purple-500 animate-blink ml-1" />
-                </div>
+                <HeroTitle />
 
                 <div className="flex flex-wrap justify-center gap-6">
                   <a href="#projects" className="group relative px-8 py-3 rounded-full backdrop-blur-md transition-all flex items-center gap-2 overflow-hidden bg-gradient-to-r from-purple-600 to-cyan-600 hover:scale-105 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]">
@@ -274,8 +273,17 @@ const App = () => {
                     className="group relative px-8 py-3 bg-transparent border border-white/10 rounded-full backdrop-blur-md transition-all flex items-center gap-2 overflow-hidden hover:border-cyan-500/50"
                   >
                     <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Cpu size={18} className="text-slate-300 group-hover:text-cyan-400 transition-colors" />
-                    <span className="text-sm font-mono text-slate-300 group-hover:text-white transition-colors">NEURAL ARCHITECT</span>
+                    <Gamepad2 size={18} className="text-slate-300 group-hover:text-cyan-400 transition-colors" />
+                    <span className="text-sm font-mono text-slate-300 group-hover:text-white transition-colors">PLAY GAME</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsExplorerOpen(true)}
+                    className="group relative px-8 py-3 bg-transparent border border-white/10 rounded-full backdrop-blur-md transition-all flex items-center gap-2 overflow-hidden hover:border-purple-500/50"
+                  >
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Rocket size={18} className="text-slate-300 group-hover:text-purple-400 transition-colors" />
+                    <span className="text-sm font-mono text-slate-300 group-hover:text-white transition-colors">EXPLORE GALAXY</span>
                   </button>
                 </div>
 
@@ -316,7 +324,7 @@ const App = () => {
                   </div>
                 </div>
 
-                <div className="w-full aspect-square bg-gradient-to-b from-slate-800 to-black rounded-xl mb-6 relative overflow-hidden group-inner border border-white/5">
+                <div className="w-full aspect-[3.5/4] bg-gradient-to-b from-slate-800 to-black rounded-xl mb-6 relative overflow-hidden group-inner border border-white/5">
                   <img 
                     src={profileImage} 
                     alt="Saad Haroon" 

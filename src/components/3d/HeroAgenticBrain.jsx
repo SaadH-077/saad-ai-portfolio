@@ -24,6 +24,14 @@ const HeroAgenticBrain = () => {
         const height = parent.clientHeight;
         renderer.setSize(width, height);
         camera.aspect = width / height;
+
+        // Adjust zoom for mobile to prevent cutting off sides
+        if (width < 768) {
+          camera.position.z = 32; // Zoom out more on mobile
+        } else {
+          camera.position.z = 22; // Default desktop zoom
+        }
+
         camera.updateProjectionMatrix();
       }
     };
