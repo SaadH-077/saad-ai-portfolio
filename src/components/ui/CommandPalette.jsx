@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import cvFile from '../../assets/Muhammad Saad Haroon - EuroPassCV 12_10_2025.pdf';
 
-const CommandPalette = () => {
+const CommandPalette = ({ onRunDiagnostics }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -75,7 +75,10 @@ const CommandPalette = () => {
     {
       category: "System",
       items: [
-        { icon: Terminal, label: "Run Diagnostics", action: () => { alert("System All Green. Agentic Core Online."); setIsOpen(false); } },
+        { icon: Terminal, label: "Run Diagnostics", action: () => { 
+          if (onRunDiagnostics) onRunDiagnostics();
+          setIsOpen(false); 
+        }},
       ]
     }
   ];

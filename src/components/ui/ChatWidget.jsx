@@ -4,7 +4,7 @@ import { Send, X, MessageCircle } from 'lucide-react';
 import { projects, technicalSkills, experience, awards, certifications } from '../../data/portfolioData';
 
 // --- HUGGING FACE API INTEGRATION ---
-const HF_API_KEY = ""; // 🔴 ENTER YOUR HUGGING FACE API KEY HERE
+// The API Key is now handled securely on the server side (Vercel Functions)
 
 const generateSystemContext = () => {
   const skillsStr = technicalSkills.map(s => `[${s.category}]: ${s.items.join(', ')}`).join('\n');
@@ -40,37 +40,22 @@ If the answer is not in the context, say "I don't have that information in my re
 };
 
 async function callHuggingFace(userQuery) {
-  if (!HF_API_KEY) {
-    return "⚠️ System Error: Hugging Face API Key is missing in the code.";
-  }
-
   const systemPrompt = generateSystemContext();
   const fullPrompt = `<s>[INST] <<SYS>>\n${systemPrompt}\n<</SYS>>\n\nUser Question: ${userQuery} [/INST]`;
 
   try {
-    // Use local proxy to bypass CORS during development
-    const response = await fetch(
-      "/hf-api/models/HuggingFaceH4/zephyr-7b-beta",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${HF_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: fullPrompt,
-          parameters: {
-            max_new_tokens: 250,
-            temperature: 0.7,
-            return_full_text: false,
-          },
-        }),
-      }
-    );
+    // Call our own Vercel Serverless Function
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt: fullPrompt }),
+    });
 
     if (!response.ok) {
       const err = await response.text();
-      console.error("HF API Error Details:", response.status, err);
+      console.error("API Error Details:", response.status, err);
       throw new Error(`API Error: ${response.status}`);
     }
 

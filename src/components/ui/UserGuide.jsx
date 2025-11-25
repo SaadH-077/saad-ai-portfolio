@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Command, Gamepad2, MousePointer2, X, HelpCircle, Cpu } from 'lucide-react';
+import { Terminal, Command, Gamepad2, MousePointer2, X, HelpCircle, Cpu, Rocket, Activity } from 'lucide-react';
 
 const UserGuide = ({ isOpen, onClose }) => {
   return (
@@ -17,7 +17,7 @@ const UserGuide = ({ isOpen, onClose }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative w-full max-w-3xl bg-[#0a0a0c] border border-white/10 rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden mx-4"
+            className="relative w-full max-w-4xl bg-[#0a0a0c] border border-white/10 rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden mx-4"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -26,7 +26,7 @@ const UserGuide = ({ isOpen, onClose }) => {
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                   <HelpCircle className="text-cyan-400" /> SYSTEM MANUAL
                 </h2>
-                <p className="text-xs text-slate-400 font-mono mt-1">INTERACTIVE FEATURE GUIDE v2.0</p>
+                <p className="text-xs text-slate-400 font-mono mt-1">INTERACTIVE FEATURE GUIDE v2.1</p>
               </div>
               <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
                 <X size={24} />
@@ -34,7 +34,7 @@ const UserGuide = ({ isOpen, onClose }) => {
             </div>
 
             {/* Content */}
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto custom-scrollbar">
               <Feature 
                 icon={Terminal} 
                 title="Terminal Mode" 
@@ -48,6 +48,20 @@ const UserGuide = ({ isOpen, onClose }) => {
                 shortcut="CMD + K"
                 desc="Quickly navigate to any section or external link using the global search."
                 color="purple"
+              />
+              <Feature 
+                icon={Rocket} 
+                title="Galaxy Explorer" 
+                shortcut="Click 'Explore Galaxy'"
+                desc="Navigate a 3D visualization of 7 neural architectures (CNN, GAN, Transformers, etc.). Use Arrow Keys to navigate. Optimized for Mobile."
+                color="orange"
+              />
+              <Feature 
+                icon={Activity} 
+                title="System Diagnostics" 
+                shortcut="CMD + K -> Run Diagnostics"
+                desc="Initiate a full system scan to verify neural pathways, rendering engine status, and security protocols via a visual overlay."
+                color="blue"
               />
               <Feature 
                 icon={Gamepad2} 
@@ -68,7 +82,7 @@ const UserGuide = ({ isOpen, onClose }) => {
             {/* Footer */}
             <div className="p-6 border-t border-white/10 bg-white/5 flex justify-between items-center shrink-0">
               <p className="text-[10px] text-slate-500 font-mono">
-                * Features are optimized for desktop experience.
+                * Features are optimized for both Desktop and Mobile experiences.
               </p>
               <button 
                 onClick={onClose}

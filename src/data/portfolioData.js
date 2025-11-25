@@ -235,6 +235,51 @@ io.on('connection', (socket) => {
     }
   },
   {
+    title: "DananasBB Website",
+    desc: "Modern, responsive website for a Toronto-based burger chain. Features a custom Spotify player integration, immersive UI/UX design, and seamless navigation.",
+    tags: ["HTML/CSS", "Tailwind CSS", "JavaScript", "UI/UX"],
+    category: "Software Engineering",
+    icon: Layout,
+    color: "yellow",
+    link: "https://github.com/SaadH-077/DananasBB-Website",
+    architecture: {
+      nodes: [
+        { id: 'ui', label: 'Frontend UI', type: 'client', desc: 'Responsive HTML5/Tailwind interface' },
+        { id: 'audio', label: 'Spotify Player', type: 'service', desc: 'Custom audio player integration' },
+        { id: 'ux', label: 'UX Design', type: 'design', desc: 'Modern aesthetic with smooth interactions' }
+      ],
+      edges: []
+    },
+    codeSnippet: {
+      language: "javascript",
+      code: `// Custom Audio Player Logic
+const togglePlay = () => {
+  const audio = document.getElementById('bg-music');
+  const btn = document.getElementById('play-btn');
+  
+  if (audio.paused) {
+    audio.play();
+    btn.classList.add('playing');
+    startVisualizer();
+  } else {
+    audio.pause();
+    btn.classList.remove('playing');
+    stopVisualizer();
+  }
+};
+
+// Smooth Scroll Navigation
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});`
+    }
+  },
+  {
     title: "Saad.AI Portfolio",
     desc: "The recursive architecture of this very website. A React-based cyber-interface featuring 3D visualization, terminal emulation, and agentic UI patterns.",
     tags: ["React", "Three.js", "Framer Motion", "Vite"],

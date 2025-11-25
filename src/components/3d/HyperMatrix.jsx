@@ -3,14 +3,23 @@ import * as THREE from 'three';
 
 const HyperMatrix = () => {
   const mountRef = useRef(null);
+  const isInView = useRef(true);
 
   useEffect(() => {
     if (!mountRef.current) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isInView.current = entry.isIntersecting;
+    }, { threshold: 0.1 });
+    observer.observe(mountRef.current);
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 12;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    const isMobile = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -29,7 +38,7 @@ const HyperMatrix = () => {
     scene.add(group);
 
     // Create a matrix of floating cubes
-    const cubeCount = 100;
+    const cubeCount = isMobile ? 50 : 100; // Reduced for mobile
     const instancedGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
     const instancedMat = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.9 });
     const mesh = new THREE.InstancedMesh(instancedGeo, instancedMat, cubeCount);
@@ -71,6 +80,7 @@ const HyperMatrix = () => {
 
     const animate = () => {
       requestAnimationFrame(animate);
+      if (!isInView.current) return;
       
       group.rotation.y += 0.007;
       group.rotation.x += 0.005;
@@ -88,6 +98,7 @@ const HyperMatrix = () => {
 
     window.addEventListener('resize', updateSize);
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', updateSize);
       if(mountRef.current) mountRef.current.removeChild(renderer.domElement);
       renderer.dispose();

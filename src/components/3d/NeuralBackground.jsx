@@ -15,12 +15,16 @@ const NeuralBackground = () => {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    // Optimize for mobile
+    const isMobile = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
+    
     mountRef.current.appendChild(renderer.domElement);
 
     // Galaxy Starfield
     const geometry = new THREE.BufferGeometry();
-    const count = 4000;
+    const count = isMobile ? 1500 : 4000; // Reduced count for mobile
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     

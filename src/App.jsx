@@ -47,6 +47,7 @@ import ArchitectureView from './components/ui/ArchitectureView';
 import TerminalMode from './components/ui/TerminalMode';
 import SystemMonitor from './components/ui/SystemMonitor';
 import UserGuide from './components/ui/UserGuide';
+import DiagnosticsOverlay from './components/ui/DiagnosticsOverlay';
 
 // Assets
 import profileImage from './assets/profile4.jpg';
@@ -117,6 +118,7 @@ const App = () => {
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   
   useEffect(() => {
@@ -158,7 +160,11 @@ const App = () => {
         {isLoading && <Preloader setIsLoading={setIsLoading} />}
       </AnimatePresence>
 
-      <CommandPalette />
+      <AnimatePresence>
+        {isDiagnosticsOpen && <DiagnosticsOverlay onClose={() => setIsDiagnosticsOpen(false)} />}
+      </AnimatePresence>
+
+      <CommandPalette onRunDiagnostics={() => setIsDiagnosticsOpen(true)} />
       <TerminalMode isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
       <SystemMonitor />
       <UserGuide isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />

@@ -3,14 +3,23 @@ import * as THREE from 'three';
 
 const HolographicGlobe = () => {
   const mountRef = useRef(null);
+  const isInView = useRef(true);
 
   useEffect(() => {
     if (!mountRef.current) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isInView.current = entry.isIntersecting;
+    }, { threshold: 0.1 });
+    observer.observe(mountRef.current);
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 15;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    const isMobile = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -25,7 +34,7 @@ const HolographicGlobe = () => {
     updateSize();
     mountRef.current.appendChild(renderer.domElement);
 
-    const geometry = new THREE.IcosahedronGeometry(5, 2);
+    const geometry = new THREE.IcosahedronGeometry(5, isMobile ? 1 : 2); // Reduced detail for mobile
     const material = new THREE.MeshBasicMaterial({ 
       color: 0x4488ff, 
       wireframe: true, 
@@ -35,7 +44,7 @@ const HolographicGlobe = () => {
     const globe = new THREE.Mesh(geometry, material);
     scene.add(globe);
 
-    const pGeo = new THREE.IcosahedronGeometry(5, 3);
+    const pGeo = new THREE.IcosahedronGeometry(5, isMobile ? 2 : 3); // Reduced detail for mobile
     const pMat = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.08, transparent: true, opacity: 0.8 });
     const points = new THREE.Points(pGeo, pMat); 
     scene.add(points);
@@ -44,6 +53,8 @@ const HolographicGlobe = () => {
 
     const animate = () => {
       requestAnimationFrame(animate);
+      if (!isInView.current) return;
+
       globe.rotation.y += 0.002;
       points.rotation.y += 0.002;
       renderer.render(scene, camera);
@@ -51,6 +62,7 @@ const HolographicGlobe = () => {
     animate();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', updateSize);
       if(mountRef.current) mountRef.current.removeChild(renderer.domElement);
       renderer.dispose();

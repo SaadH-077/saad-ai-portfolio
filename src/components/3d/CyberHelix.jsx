@@ -4,14 +4,23 @@ import * as THREE from 'three';
 const CyberHelix = () => {
   const mountRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const isInView = useRef(true);
 
   useEffect(() => {
     if (!mountRef.current) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      isInView.current = entry.isIntersecting;
+    }, { threshold: 0.1 });
+    observer.observe(mountRef.current);
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 20;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+    const isMobile = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -26,7 +35,7 @@ const CyberHelix = () => {
     updateSize();
     mountRef.current.appendChild(renderer.domElement);
 
-    const particleCount = 200;
+    const particleCount = isMobile ? 100 : 200; // Reduced for mobile
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
@@ -63,6 +72,8 @@ const CyberHelix = () => {
 
     const animate = () => {
       requestAnimationFrame(animate);
+      if (!isInView.current) return;
+      
       helix.rotation.y += 0.02;
       helix.rotation.x = mouseRef.current.y * 0.2;
       helix.rotation.z = mouseRef.current.x * 0.2;
@@ -71,6 +82,7 @@ const CyberHelix = () => {
     animate();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', updateSize);
       if(mountRef.current) mountRef.current.removeChild(renderer.domElement);

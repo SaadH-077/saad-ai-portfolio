@@ -6,16 +6,25 @@ const HeroAgenticBrain = () => {
   const mouseRef = useRef({ x: 0, y: 0 });
   const explosionFactor = useRef(0); 
   const isExploding = useRef(false);
+  const isInView = useRef(true);
 
   useEffect(() => {
     if (!mountRef.current) return;
+
+    // Intersection Observer to pause rendering when off-screen
+    const observer = new IntersectionObserver(([entry]) => {
+      isInView.current = entry.isIntersecting;
+    }, { threshold: 0.1 });
+    
+    observer.observe(mountRef.current);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
     camera.position.z = 22; 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const isMobile = window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 2));
     
     const updateSize = () => {
       const parent = mountRef.current?.parentElement;
@@ -40,7 +49,7 @@ const HeroAgenticBrain = () => {
 
     // --- OBJECTS ---
 
-    const particleCount = 1500; // Increased particle count
+    const particleCount = isMobile ? 800 : 1500; // Reduced particle count for mobile
     const particleGeo = new THREE.BufferGeometry();
     const particlePos = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -106,7 +115,7 @@ const HeroAgenticBrain = () => {
     scene.add(coreParticles);
 
     // --- GALAXY BACKGROUND ---
-    const galaxyCount = 35000;
+    const galaxyCount = isMobile ? 10000 : 35000; // Reduced galaxy count for mobile
     const galaxyGeo = new THREE.BufferGeometry();
     const galaxyPos = new Float32Array(galaxyCount * 3);
     const galaxyColors = new Float32Array(galaxyCount * 3);
@@ -194,6 +203,8 @@ const HeroAgenticBrain = () => {
     const animate = () => {
       requestAnimationFrame(animate);
       
+      if (!isInView.current) return;
+
       const positions = coreParticles.geometry.attributes.position.array;
       const pColors = coreParticles.geometry.attributes.color.array;
       
@@ -267,6 +278,7 @@ const HeroAgenticBrain = () => {
     animate();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', updateSize);
       if(mountRef.current) {
