@@ -6,78 +6,10 @@ import { projects, technicalSkills, experience, awards, certifications } from '.
 // --- HUGGING FACE API INTEGRATION ---
 // The API Key is now handled securely on the server side (Vercel Functions)
 
-const generateSystemContext = () => {
-  const skillsStr = technicalSkills.map(s => `[${s.category}]: ${s.items.join(', ')}`).join('\n');
-  const projectsStr = projects.map(p => `• ${p.title}: ${p.desc} [Tech: ${p.tags.join(', ')}]`).join('\n');
-  const expStr = experience.map(e => `• ${e.title} @ ${e.company} (${e.date})\n  - ${e.points.join('\n  - ')}`).join('\n');
-  const awardsStr = awards.map(a => `• ${a.title}: ${a.desc}`).join('\n');
-  const certsStr = certifications.map(c => `• ${c.title} (${c.issuer}, ${c.date})`).join('\n');
-
-  return `
-You are the AI Assistant for Muhammad Saad Haroon's portfolio. 
-Your goal is to answer questions about Saad's professional background, skills, and projects using ONLY the context below.
-Keep answers concise (under 3 sentences if possible), professional, and engaging.
-
---- CONTEXT START ---
-[TECHNICAL SKILLS]
-${skillsStr}
-
-[PROJECTS]
-${projectsStr}
-
-[EXPERIENCE]
-${expStr}
-
-[AWARDS]
-${awardsStr}
-
-[CERTIFICATIONS]
-${certsStr}
---- CONTEXT END ---
-
-If the answer is not in the context, say "I don't have that information in my records, but you can contact Saad directly!"
-`;
-};
-
 async function callHuggingFace(userQuery) {
-  const systemPrompt = generateSystemContext();
-  // Qwen 2.5 uses ChatML format
-  const fullPrompt = `<|im_start|>system\n${systemPrompt}<|im_end|>\n<|im_start|>user\n${userQuery}<|im_end|>\n<|im_start|>assistant\n`;
-
-  try {
-    // Call our own Vercel Serverless Function
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ prompt: fullPrompt }),
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("API Error Details:", response.status, errText);
-      // Throw a more specific error to be caught below
-      throw new Error(`Server Error (${response.status}): ${errText || 'Unknown error'}`);
-    }
-
-    const data = await response.json();
-    // API usually returns an array with 'generated_text'
-    let botResponse = data[0]?.generated_text || "No response generated.";
-    
-    // Cleanup if the model returns the prompt
-    if (botResponse.includes("<|im_start|>assistant")) {
-      botResponse = botResponse.split("<|im_start|>assistant").pop().trim();
-    } else if (botResponse.includes(userQuery)) {
-       // Fallback cleanup if prompt is included but marker is missing/malformed
-       botResponse = botResponse.substring(botResponse.indexOf(userQuery) + userQuery.length).trim();
-    }
-    
-    return botResponse;
-  } catch (error) {
-    console.error(error);
-    return `⚠️ Error: ${error.message || "Connection failed"}. (If on localhost, use 'vercel dev')`;
-  }
+  // Simulating network delay for better UX
+  await new Promise(resolve => setTimeout(resolve, 600));
+  return "This feature is under development.";
 }
 
 const ChatWidget = ({ isOpen, setIsOpen }) => {
