@@ -49,7 +49,7 @@ const HeroAgenticBrain = () => {
 
     // --- OBJECTS ---
 
-    const particleCount = isMobile ? 800 : 1500; // Reduced particle count for mobile
+    const particleCount = 1500; // Fixed particle count for consistent density
     const particleGeo = new THREE.BufferGeometry();
     const particlePos = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -105,7 +105,7 @@ const HeroAgenticBrain = () => {
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
     
     const particleMat = new THREE.PointsMaterial({
-      size: 0.15, // Increased for better visibility
+      size: 0.2, // Increased for better visibility and contrast
       vertexColors: true,
       transparent: true,
       opacity: 1.0, // Max opacity for better contrast

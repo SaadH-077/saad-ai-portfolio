@@ -211,9 +211,9 @@ const ArchitectureView = ({ project, onClose }) => {
                 </div>
               </div>
             ) : (
-              <div className="w-full h-full overflow-auto bg-[#0d0d0d] p-4 md:p-8 pb-20 flex items-center justify-center">
+              <div className="w-full h-full overflow-auto bg-[#0d0d0d] p-4 md:p-8 pb-20 flex flex-col md:flex-row items-start md:items-center justify-center">
                 {project.codeSnippet ? (
-                  <div className="w-full max-w-4xl relative rounded-lg overflow-hidden border border-slate-800 bg-[#1e1e1e] shadow-2xl">
+                  <div className="w-full max-w-4xl relative rounded-lg overflow-hidden border border-slate-800 bg-[#1e1e1e] shadow-2xl shrink-0">
                     
                     {/* Terminal Header */}
                     <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-slate-800">
