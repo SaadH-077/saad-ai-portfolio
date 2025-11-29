@@ -110,7 +110,7 @@ const ArchitectureView = ({ project, onClose }) => {
           <div className="relative flex-grow overflow-hidden bg-[#050505]">
             
             {activeTab === 'blueprint' ? (
-              <div className="w-full h-full p-4 md:p-8 overflow-y-auto overscroll-contain pb-24 md:pb-8">
+              <div className="w-full h-full p-4 md:p-8 overflow-auto overscroll-contain pb-24 md:pb-8">
                 {/* Grid Background */}
                 <div className="absolute inset-0 opacity-20 pointer-events-none" 
                      style={{ 
@@ -120,39 +120,73 @@ const ArchitectureView = ({ project, onClose }) => {
                 />
 
                 {/* Flow Container */}
-                <div className="relative z-10 flex flex-wrap items-start justify-center gap-8 md:gap-12 w-full max-w-4xl pb-8 mx-auto">
-                  {['client', 'server', 'service', 'ai', 'database', 'code'].map((layer, layerIndex) => {
+                <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start justify-center gap-8 md:gap-4 w-full md:w-max md:min-w-full pb-8 mx-auto">
+                  {['client', 'server', 'service', 'ai', 'database', 'code']
+                    .filter(layer => nodes.some(n => n.type === layer))
+                    .map((layer, layerIndex, array) => {
                     const layerNodes = nodes.filter(n => n.type === layer);
-                    if (layerNodes.length === 0) return null;
-
+                    
                     return (
-                      <div key={layer} className="flex flex-col gap-6 items-center justify-center w-full md:w-auto md:min-w-[200px]">
-                        {/* Layer Label */}
-                        <div className="text-[10px] font-mono uppercase tracking-widest text-slate-600 mb-2 border-b border-slate-800 pb-1 w-full text-center">
-                          {layer === 'ai' ? 'AI / ML Models' : layer}
+                      <React.Fragment key={layer}>
+                        <div className="flex flex-col gap-6 items-center justify-start w-full md:w-64 shrink-0">
+                          {/* Layer Label */}
+                          <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-slate-500 mb-2 border-b border-slate-800 pb-2 w-full justify-center">
+                            {layer === 'ai' ? <Brain size={12} /> : 
+                             layer === 'database' ? <Database size={12} /> :
+                             layer === 'client' ? <Globe size={12} /> :
+                             layer === 'server' ? <Server size={12} /> :
+                             <Layers size={12} />
+                            }
+                            {layer === 'ai' ? 'AI Models' : layer}
+                          </div>
+
+                          {layerNodes.map((node, index) => {
+                            const Icon = getNodeIcon(node.type);
+                            return (
+                              <motion.div
+                                key={node.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: layerIndex * 0.1 + index * 0.1 }}
+                                className={`relative group w-full p-4 rounded-xl border ${getNodeColor(node.type)} backdrop-blur-sm hover:scale-105 transition-all duration-300 flex flex-col gap-3`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="p-2 rounded-lg bg-white/5">
+                                    <Icon size={18} />
+                                  </div>
+                                  <div className="text-[10px] font-mono opacity-50">#{node.id}</div>
+                                </div>
+                                
+                                <div>
+                                  <span className="font-bold text-sm block mb-1">{node.label}</span>
+                                  <div className="text-[10px] opacity-70 font-mono leading-relaxed">
+                                    {node.desc}
+                                  </div>
+                                </div>
+
+                                {/* Connection Points */}
+                                <div className="absolute top-1/2 -right-1 w-2 h-2 bg-current rounded-full opacity-0 group-hover:opacity-50 transition-opacity translate-x-1/2 hidden md:block" />
+                                <div className="absolute top-1/2 -left-1 w-2 h-2 bg-current rounded-full opacity-0 group-hover:opacity-50 transition-opacity -translate-x-1/2 hidden md:block" />
+                              </motion.div>
+                            );
+                          })}
                         </div>
 
-                        {layerNodes.map((node, index) => {
-                          const Icon = getNodeIcon(node.type);
-                          return (
-                            <motion.div
-                              key={node.id}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: layerIndex * 0.1 + index * 0.1 }}
-                              className={`relative group w-full p-4 rounded-lg border ${getNodeColor(node.type)} backdrop-blur-sm hover:scale-105 transition-all duration-300`}
-                            >
-                              <div className="flex items-center gap-3 mb-2">
-                                <Icon size={18} />
-                                <span className="font-bold text-sm">{node.label}</span>
-                              </div>
-                              <div className="text-[10px] opacity-70 font-mono leading-relaxed">
-                                {node.desc}
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
+                        {/* Pipeline Connector */}
+                        {layerIndex < array.length - 1 && (
+                          <div className="flex md:flex-col items-center justify-center gap-2 text-slate-700 md:pt-20 shrink-0">
+                            <div className="hidden md:flex w-8 h-[2px] bg-gradient-to-r from-slate-800 to-slate-700" />
+                            <ArrowRight size={20} className="hidden md:block text-slate-600 animate-pulse" />
+                            <div className="hidden md:flex w-8 h-[2px] bg-gradient-to-r from-slate-700 to-slate-800" />
+                            
+                            {/* Mobile Down Arrow */}
+                            <div className="md:hidden flex flex-col items-center gap-1 h-12">
+                              <div className="w-[2px] h-full bg-gradient-to-b from-slate-800 to-slate-700" />
+                              <div className="w-2 h-2 rotate-45 border-b-2 border-r-2 border-slate-600" />
+                            </div>
+                          </div>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </div>
@@ -177,32 +211,58 @@ const ArchitectureView = ({ project, onClose }) => {
                 </div>
               </div>
             ) : (
-              <div className="w-full h-full overflow-auto bg-[#1e1e1e] p-0 pb-20">
+              <div className="w-full h-full overflow-auto bg-[#0d0d0d] p-4 md:p-8 pb-20 flex items-center justify-center">
                 {project.codeSnippet ? (
-                  <div className="relative">
-                    <div className="absolute top-4 right-4 flex gap-2 z-10">
-                      <button 
-                        onClick={handleCopy}
-                        className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-xs font-mono text-slate-300 flex items-center gap-2 transition-colors backdrop-blur-sm"
-                      >
-                        {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                        {copied ? 'Copied!' : 'Copy'}
-                      </button>
-                      <div className="px-3 py-1 bg-white/10 rounded text-xs font-mono text-slate-300 backdrop-blur-sm">
-                        {project.codeSnippet.language}
+                  <div className="w-full max-w-4xl relative rounded-lg overflow-hidden border border-slate-800 bg-[#1e1e1e] shadow-2xl">
+                    
+                    {/* Terminal Header */}
+                    <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-slate-800">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                        <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                        <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                      </div>
+                      <div className="text-xs font-mono text-slate-400 flex items-center gap-2">
+                        <FileCode size={12} />
+                        <span>src/modules/{project.title.toLowerCase().replace(/\s+/g, '_')}.{project.codeSnippet.language === 'python' ? 'py' : project.codeSnippet.language === 'javascript' ? 'js' : 'ts'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                         <button 
+                          onClick={handleCopy}
+                          className="p-1.5 hover:bg-white/10 rounded text-slate-400 hover:text-white transition-colors"
+                          title="Copy Code"
+                        >
+                          {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+                        </button>
                       </div>
                     </div>
-                    <div className="overflow-x-auto">
+
+                    {/* Code Content */}
+                    <div className="relative overflow-x-auto max-h-[60vh] custom-scrollbar">
                       <SyntaxHighlighter 
                         language={project.codeSnippet.language} 
                         style={vscDarkPlus}
-                        customStyle={{ margin: 0, padding: '2rem', fontSize: '14px', lineHeight: '1.5', background: 'transparent', minWidth: '100%' }}
+                        customStyle={{ margin: 0, padding: '1.5rem', fontSize: '14px', lineHeight: '1.6', background: '#1e1e1e', minWidth: '100%' }}
                         showLineNumbers={true}
                         wrapLines={true}
+                        lineNumberStyle={{ minWidth: '3em', paddingRight: '1em', color: '#6e7681', textAlign: 'right' }}
                       >
                         {project.codeSnippet.code}
                       </SyntaxHighlighter>
                     </div>
+
+                    {/* Status Bar */}
+                    <div className="flex items-center justify-between px-4 py-1.5 bg-[#007acc] text-white text-[10px] font-mono">
+                      <div className="flex items-center gap-4">
+                        <span>main*</span>
+                        <span>{project.codeSnippet.language.toUpperCase()}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span>Ln {project.codeSnippet.code.split('\n').length}, Col 1</span>
+                        <span>UTF-8</span>
+                      </div>
+                    </div>
+
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-slate-500 gap-4">

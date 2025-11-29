@@ -180,7 +180,10 @@ const HeroAgenticBrain = () => {
     });
     const lineGeo = new THREE.BufferGeometry();
     const synapses = new THREE.LineSegments(lineGeo, lineMat);
-    scene.add(synapses);
+    coreParticles.add(synapses);
+    
+    // Initial rotation to match the design (Pink Left, Cyan Right)
+    coreParticles.rotation.z = -Math.PI / 2;
 
     // --- INTERACTION ---
     const handleMouseMove = (e) => {
@@ -268,7 +271,8 @@ const HeroAgenticBrain = () => {
       scene.rotation.x += (targetRotX - scene.rotation.x) * 0.05;
       scene.rotation.y += (targetRotY - scene.rotation.y) * 0.05;
 
-      coreParticles.rotation.y += 0.006;
+      coreParticles.rotation.y += 0.004;
+      coreParticles.rotation.z += 0.002;
       
       // Rotate Galaxy (around its own local Y axis which is now tilted)
       galaxy.rotateY(0.003);
