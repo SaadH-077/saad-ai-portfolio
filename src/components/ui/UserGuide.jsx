@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Command, Gamepad2, MousePointer2, X, HelpCircle, Cpu, Rocket, Activity } from 'lucide-react';
+import { Terminal, Command, Gamepad2, MousePointer2, X, HelpCircle, Cpu, Rocket, Activity, Mic, Settings, Code } from 'lucide-react';
 
 const UserGuide = ({ isOpen, onClose }) => {
   return (
@@ -76,6 +76,27 @@ const UserGuide = ({ isOpen, onClose }) => {
                 shortcut="Click 'Blueprint'"
                 desc="View the technical architecture and code snippets for each project."
                 color="cyan"
+              />
+              <Feature 
+                icon={Mic} 
+                title="Voice Command" 
+                shortcut="Click Mic Icon"
+                desc="Navigate the site and control features using voice commands. Try saying 'Open Terminal' or 'Go to Projects'."
+                color="pink"
+              />
+              <Feature 
+                icon={Settings} 
+                title="Dev Tools" 
+                shortcut="CTRL + SHIFT + D"
+                desc="Open the runtime configurator to tweak visuals, audio sensitivity, and system colors in real-time."
+                color="yellow"
+              />
+              <Feature 
+                icon={Code} 
+                title="Matrix Mode" 
+                shortcut="Toggle in DevTools"
+                desc="Enter the Matrix. A complete visual overhaul transforming the interface into a retro-futuristic terminal."
+                color="green"
               />
             </div>
 

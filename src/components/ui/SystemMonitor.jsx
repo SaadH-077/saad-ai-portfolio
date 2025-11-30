@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Wifi, Cpu, HardDrive } from 'lucide-react';
+import { Activity, Wifi, Cpu, HardDrive, Settings } from 'lucide-react';
 
-const SystemMonitor = () => {
+const SystemMonitor = ({ onToggleDevTools }) => {
   const [metrics, setMetrics] = useState({
     cpu: 12,
     memory: 45,
@@ -55,6 +55,14 @@ const SystemMonitor = () => {
         <div className="pl-1">
            <span className="opacity-50">UP:</span> {formatTime(metrics.uptime)}
         </div>
+        <div className="w-[1px] h-3 bg-slate-800" />
+        <button 
+          onClick={onToggleDevTools}
+          className="pointer-events-auto hover:text-white transition-colors"
+          title="Open DevTools"
+        >
+          <Settings size={12} />
+        </button>
       </div>
     </div>
   );

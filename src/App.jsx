@@ -48,6 +48,8 @@ import TerminalMode from './components/ui/TerminalMode';
 import SystemMonitor from './components/ui/SystemMonitor';
 import UserGuide from './components/ui/UserGuide';
 import DiagnosticsOverlay from './components/ui/DiagnosticsOverlay';
+import VoiceCommand from './components/ui/VoiceCommand';
+import DevTools from './components/ui/DevTools';
 
 // Assets
 import profileImage from './assets/profile4.jpg';
@@ -120,6 +122,17 @@ const App = () => {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [audioLevel, setAudioLevel] = useState(0);
+  const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
+  const [devConfig, setDevConfig] = useState({
+    primaryColor: null, // Default to null to preserve original vertex colors
+    secondaryColor: '#a855f7',
+    rotationSpeed: 1,
+    particleSize: 1,
+    audioSensitivity: 1.5,
+    wireframe: false,
+    matrixMode: false
+  });
   
   useEffect(() => {
     // Check if user has visited before
@@ -141,6 +154,12 @@ const App = () => {
         e.preventDefault();
         setIsTerminalOpen(prev => !prev);
       }
+
+      // Toggle DevTools with Ctrl+Shift+D
+      if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+        e.preventDefault();
+        setIsDevToolsOpen(prev => !prev);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -153,8 +172,11 @@ const App = () => {
     : projects.filter(p => p.category === activeCategory);
 
   return (
-    <div className="bg-gradient-to-b from-[#050508] via-[#0b0b15] to-[#050508] text-slate-200 min-h-screen font-sans selection:bg-purple-500/30 selection:text-white overflow-x-hidden cursor-none">
+    <div className={`bg-gradient-to-b from-[#050508] via-[#0b0b15] to-[#050508] text-slate-200 min-h-screen font-sans selection:bg-purple-500/30 selection:text-white overflow-x-hidden cursor-none ${devConfig.matrixMode ? 'matrix-fonts' : ''}`}>
       <CustomCursor />
+      
+      {/* Matrix Overlay */}
+      <div className={`matrix-overlay ${devConfig.matrixMode ? 'active' : ''}`} />
       
       <AnimatePresence mode="wait">
         {isLoading && <Preloader setIsLoading={setIsLoading} />}
@@ -166,9 +188,23 @@ const App = () => {
 
       <CommandPalette onRunDiagnostics={() => setIsDiagnosticsOpen(true)} />
       <TerminalMode isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} />
-      <SystemMonitor />
+      <SystemMonitor onToggleDevTools={() => setIsDevToolsOpen(prev => !prev)} />
       <UserGuide isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
       <NeuralClassifierGame isOpen={isGameOpen} onClose={() => setIsGameOpen(false)} />
+      <VoiceCommand 
+        onOpenTerminal={() => setIsTerminalOpen(true)}
+        onOpenGame={() => setIsGameOpen(true)}
+        onOpenExplorer={() => setIsExplorerOpen(true)}
+        onOpenGuide={() => setIsGuideOpen(true)}
+        onRunDiagnostics={() => setIsDiagnosticsOpen(true)}
+        onAudioLevel={setAudioLevel}
+      />
+      <DevTools 
+        isOpen={isDevToolsOpen} 
+        onClose={() => setIsDevToolsOpen(false)}
+        config={devConfig}
+        setConfig={setDevConfig}
+      />
       <AnimatePresence>
         {isExplorerOpen && <GalaxyExplorer onClose={() => setIsExplorerOpen(false)} />}
       </AnimatePresence>
@@ -217,7 +253,7 @@ const App = () => {
                 
                 {/* 3D Container */}
                 <div className="relative w-full h-full z-10">
-                   <HeroAgenticBrain />
+                   <HeroAgenticBrain audioLevel={audioLevel} config={devConfig} />
                 </div>
 
                 {/* Background Glow */}
@@ -237,8 +273,11 @@ const App = () => {
             <div className="absolute top-24 right-6 lg:right-12 flex flex-col items-end gap-2 z-20 pointer-events-none mix-blend-difference">
                <span className="text-[10px] font-mono text-slate-400 tracking-widest">[ LOC: 31.5°N, 74.3°E ]</span>
                <span className="text-[10px] font-mono text-slate-600 tracking-widest">LAHORE, PK</span>
-               <div className="mt-2 px-2 py-1 border border-white/10 rounded bg-white/5 backdrop-blur-sm flex items-center gap-2">
+               <div className="hidden md:flex mt-2 px-2 py-1 border border-white/10 rounded bg-white/5 backdrop-blur-sm items-center gap-2">
                  <span className="text-[10px] font-mono text-slate-400">CMD + K</span>
+               </div>
+               <div className="hidden md:flex mt-1 px-2 py-1 border border-white/10 rounded bg-white/5 backdrop-blur-sm items-center gap-2">
+                 <span className="text-[10px] font-mono text-slate-400">CTRL + SHIFT + D</span>
                </div>
             </div>
 

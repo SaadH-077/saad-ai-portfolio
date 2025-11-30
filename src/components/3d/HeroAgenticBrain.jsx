@@ -1,12 +1,23 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const HeroAgenticBrain = () => {
+const HeroAgenticBrain = ({ audioLevel = 0, config = {} }) => {
   const mountRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const explosionFactor = useRef(0); 
   const isExploding = useRef(false);
   const isInView = useRef(true);
+  const audioLevelRef = useRef(0);
+  const smoothedAudioLevel = useRef(0);
+  const configRef = useRef(config);
+
+  useEffect(() => {
+    audioLevelRef.current = audioLevel;
+  }, [audioLevel]);
+
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -105,10 +116,10 @@ const HeroAgenticBrain = () => {
     particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
     
     const particleMat = new THREE.PointsMaterial({
-      size: 0.2, // Increased for better visibility and contrast
+      size: 0.2, // Initial size, will be updated in loop
       vertexColors: true,
       transparent: true,
-      opacity: 1.0, // Max opacity for better contrast
+      opacity: 1.0, 
       blending: THREE.AdditiveBlending
     });
     const coreParticles = new THREE.Points(particleGeo, particleMat);
@@ -216,6 +227,29 @@ const HeroAgenticBrain = () => {
 
       const targetExplosion = isExploding.current ? 4 : 0; 
       explosionFactor.current += (targetExplosion - explosionFactor.current) * 0.05;
+      
+      // Audio reactivity pulse (smoothed)
+      smoothedAudioLevel.current += (audioLevelRef.current - smoothedAudioLevel.current) * 0.1;
+      const pulse = smoothedAudioLevel.current * (configRef.current.audioSensitivity || 1.5);
+
+      // Update material properties from config
+      if (configRef.current) {
+        particleMat.size = 0.2 * (configRef.current.particleSize !== undefined ? configRef.current.particleSize : 1);
+        
+        if (configRef.current.wireframe) {
+           particleMat.size = 0.05;
+           particleMat.opacity = 0.5;
+        } else {
+           particleMat.opacity = 1.0;
+        }
+        
+        // Apply color tint if primaryColor is set
+        if (configRef.current.primaryColor) {
+           particleMat.color.set(configRef.current.primaryColor);
+        } else {
+           particleMat.color.set(0xffffff);
+        }
+      }
 
       for(let i=0; i<particleCount; i++) {
         const ix = i*3;
@@ -230,11 +264,14 @@ const HeroAgenticBrain = () => {
         const dirY = particleExplodeDir[iy];
         const dirZ = particleExplodeDir[iz];
         
-        positions[ix] = currX + dirX * explosionFactor.current;
-        positions[iy] = currY + dirY * explosionFactor.current;
-        positions[iz] = currZ + dirZ * explosionFactor.current;
+        // Apply explosion and audio pulse
+        const totalExpansion = explosionFactor.current + pulse;
+        
+        positions[ix] = currX + dirX * totalExpansion;
+        positions[iy] = currY + dirY * totalExpansion;
+        positions[iz] = currZ + dirZ * totalExpansion;
 
-        if (explosionFactor.current < 0.5) {
+        if (totalExpansion < 0.5) {
            if (i % 2 === 0) { 
              for(let j=i+1; j<particleCount; j+=8) { 
                const jx = j*3;
@@ -271,11 +308,12 @@ const HeroAgenticBrain = () => {
       scene.rotation.x += (targetRotX - scene.rotation.x) * 0.05;
       scene.rotation.y += (targetRotY - scene.rotation.y) * 0.05;
 
-      coreParticles.rotation.y += 0.004;
-      coreParticles.rotation.z += 0.002;
+      const rotSpeed = configRef.current.rotationSpeed !== undefined ? configRef.current.rotationSpeed : 1;
+      coreParticles.rotation.y += 0.004 * rotSpeed;
+      coreParticles.rotation.z += 0.002 * rotSpeed;
       
       // Rotate Galaxy (around its own local Y axis which is now tilted)
-      galaxy.rotateY(0.003);
+      galaxy.rotateY(0.003 * rotSpeed);
 
       renderer.render(scene, camera);
     };

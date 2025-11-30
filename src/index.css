@@ -33,3 +33,29 @@
 .group-inner {
   transform-style: preserve-3d;
 }
+
+/* Matrix Mode Fonts & Cursor */
+.matrix-fonts {
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.matrix-fonts * {
+  font-family: 'Courier New', Courier, monospace !important;
+  cursor: crosshair !important;
+}
+
+/* Matrix Overlay for Visual Filter */
+.matrix-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  backdrop-filter: sepia(100%) hue-rotate(50deg) saturate(300%) contrast(120%);
+  background: rgba(0, 50, 0, 0.1);
+  transition: opacity 1.5s ease-in-out;
+}
+
+.matrix-overlay.active {
+  opacity: 1;
+}
