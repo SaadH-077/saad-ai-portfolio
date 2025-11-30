@@ -92,7 +92,24 @@ const VoiceCommand = ({
 
   const startListening = () => {
     try {
-      startAudioAnalysis(); // Start analyzing audio for visuals
+      // On mobile, avoid using getUserMedia as it conflicts with SpeechRecognition
+      const isMobile = window.innerWidth < 768;
+      
+      if (!isMobile) {
+        startAudioAnalysis(); // Start analyzing audio for visuals on desktop
+      } else {
+        // Simulate audio levels on mobile for the visualizer
+        const simulateAudio = () => {
+          if (onAudioLevel) {
+            // Create a somewhat natural looking wave
+            const time = Date.now() / 100;
+            const level = (Math.sin(time) + 1) / 2 * 0.5 + Math.random() * 0.3;
+            onAudioLevel(level);
+            animationFrameRef.current = requestAnimationFrame(simulateAudio);
+          }
+        };
+        simulateAudio();
+      }
 
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
@@ -114,7 +131,7 @@ const VoiceCommand = ({
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
-        stopAudioAnalysis(); // Stop analysis when listening ends
+        stopAudioAnalysis(); // Stop analysis/simulation when listening ends
       };
 
       recognitionRef.current.onerror = (event) => {
